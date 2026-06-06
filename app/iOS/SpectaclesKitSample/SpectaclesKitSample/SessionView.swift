@@ -21,6 +21,13 @@ struct SessionView: View {
                     }
                 }.buttonStyle(.bordered)
 
+                if !model.connectionStatusText.isEmpty {
+                    Text(model.connectionStatusText)
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
+                        .padding(.bottom, 8)
+                }
+
                 Text("Received Image:")
                     .font(.subheadline)
                     .padding(.top, 8)

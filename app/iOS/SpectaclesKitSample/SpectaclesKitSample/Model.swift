@@ -60,6 +60,7 @@ final class Model: ObservableObject {
     let bondingManager: any BondingManager
     var currentSession: SpectaclesSession?
     @Published var sessionStarted: Bool = false
+    @Published var connectionStatusText: String = ""
 
     @Published var receivedMessage: String = ""
     @Published var receivedImage: UIImage?
@@ -69,6 +70,7 @@ final class Model: ObservableObject {
     @Published var statusMessage: String = "Lens name for binding: \(testLensId)"
 
     private var activeTransfer: ImageTransferState?
+    private var connectionObserverTask: Task<Void, Never>?
 
     init() {
         bondingManager = BuilderFactory.create().setIdentifier(ClientIdentifier(clientId: Bundle.main.bundleIdentifier!, appName: "SampleApp")!).setVersion("1.0").setAuth(testAuthentication()).build()
@@ -130,20 +132,58 @@ final class Model: ObservableObject {
         sendContinuation = PassthroughSubject<String, Never>()
         activeTransfer = nil
         receivedImage = nil
-        // set acceptUntrustedLenses to allow untrusted lens connections, When using singleLensByLensName.
-        currentSession = try? bondingManager.createSession(bonding: binding, request: SessionRequest(autoReconnect: true, acceptUnfusedSpectacles: true, acceptUntrustedLenses: true), delegateBuilder: { _ in
-            self
-        })
-        sessionStarted = true
+        connectionObserverTask?.cancel()
+        connectionObserverTask = nil
+
+        do {
+            // set acceptUntrustedLenses to allow untrusted lens connections, When using singleLensByLensName.
+            let session = try bondingManager.createSession(
+                bonding: binding,
+                request: SessionRequest(autoReconnect: true, acceptUnfusedSpectacles: true, acceptUntrustedLenses: true),
+                delegateBuilder: { _ in self }
+            )
+            currentSession = session
+            sessionStarted = true
+            connectionStatusText = "Session created — opening L2CAP to glasses…"
+            observeConnectionStatus(session)
+        } catch {
+            currentSession = nil
+            sessionStarted = false
+            connectionStatusText = "Session failed to start: \(error.localizedDescription)"
+            print("[SampleApp] createSession error: \(error)")
+        }
     }
 
     func stopSession() {
+        connectionObserverTask?.cancel()
+        connectionObserverTask = nil
         currentSession?.close(reason: nil)
         currentSession = nil
         sessionStarted = false
         receivedMessage = ""
         receivedImage = nil
         activeTransfer = nil
+        connectionStatusText = ""
+    }
+
+    private func observeConnectionStatus(_ session: any SpectaclesSession) {
+        connectionObserverTask = Task {
+            for await status in session.connectionStatusStream {
+                await MainActor.run {
+                    switch status {
+                    case .connectStart:
+                        self.connectionStatusText = "Connecting — opening L2CAP channel…"
+                    case let .connected(metadata):
+                        self.connectionStatusText = "Connected to lens \(metadata.lensId) v\(metadata.lensVersion)"
+                    case let .error(error):
+                        self.connectionStatusText = "Connection error: \(error.localizedDescription)"
+                        print("[SampleApp] connection error: \(error)")
+                    case let .disconnected(reason):
+                        self.connectionStatusText = "Disconnected: \(String(describing: reason))"
+                    }
+                }
+            }
+        }
     }
 }
 

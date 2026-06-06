@@ -135,6 +135,21 @@ export class CameraCaptureToMobile extends BaseScriptComponent {
     }
   }
 
+  private createSessionAsync(onDisconnect: () => void): Promise<any> {
+    return new Promise((resolve, reject) => {
+      try {
+        const session = this.module.createSession()
+        session.onDisconnected.add(onDisconnect)
+        session.onConnected.add(() => {
+          resolve(session)
+        })
+        session.start()
+      } catch (error) {
+        reject(error)
+      }
+    })
+  }
+
   private onCaptureRequested(): void {
     if (this.isSending) {
       this.appendLine("Transfer in progress")

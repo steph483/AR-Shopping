@@ -93,33 +93,46 @@ export class CameraCaptureToMobile extends BaseScriptComponent {
     })
 
     this.appendLine("Script started")
-    this.appendLine("Awaiting mobile connection…")
+    this.startMobileSession()
+  }
+
+  private startMobileSession(): void {
+    if (this.session) {
+      try {
+        this.session.close()
+      } catch (error) {
+        this.logger.info("Closing previous session: " + error)
+      }
+      this.session = null
+    }
+
+    this.appendLine("Starting BLE session listener…")
 
     try {
-      this.session = await this.createSessionAsync(() => {
+      const session = this.module.createSession()
+      this.session = session
+
+      session.onDisconnected.add(() => {
         this.session = null
-        this.appendLine("Disconnected")
+        this.appendLine("Disconnected — restarting listener…")
+        const restart = this.createEvent("DelayedCallbackEvent")
+        restart.bind(() => {
+          this.startMobileSession()
+        })
+        restart.reset(1)
       })
-      this.appendLine("Client connected")
-      this.appendLine("Press RoundButton to capture and send")
+
+      session.onConnected.add(() => {
+        this.appendLine("Client connected")
+        this.appendLine("Press RoundButton to capture and send")
+      })
+
+      session.start()
+      this.appendLine("Awaiting mobile connection…")
+      this.appendLine("(Start Session in the iOS app while this lens is running)")
     } catch (error) {
       this.appendLine("Mobile Kit unavailable: " + error)
     }
-  }
-
-  private createSessionAsync(onDisconnect: () => void): Promise<any> {
-    return new Promise((resolve, reject) => {
-      try {
-        const session = this.module.createSession()
-        session.onDisconnected.add(onDisconnect)
-        session.onConnected.add(() => {
-          resolve(session)
-        })
-        session.start()
-      } catch (error) {
-        reject(error)
-      }
-    })
   }
 
   private onCaptureRequested(): void {

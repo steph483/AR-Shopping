@@ -160,6 +160,21 @@ let CameraCaptureToMobile = (() => {
                 this.appendLine("Mobile Kit unavailable: " + error);
             }
         }
+        createSessionAsync(onDisconnect) {
+            return new Promise((resolve, reject) => {
+                try {
+                    const session = this.module.createSession();
+                    session.onDisconnected.add(onDisconnect);
+                    session.onConnected.add(() => {
+                        resolve(session);
+                    });
+                    session.start();
+                }
+                catch (error) {
+                    reject(error);
+                }
+            });
+        }
         onCaptureRequested() {
             if (this.isSending) {
                 this.appendLine("Transfer in progress");
