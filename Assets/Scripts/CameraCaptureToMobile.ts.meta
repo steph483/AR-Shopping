@@ -1,0 +1,64 @@
+- !<AssetImportMetadata/815170ca-6ae3-48b1-bd62-498a1448ecf2>
+  ImportedAssetIds:
+    TypeScriptAsset: !<reference> ea7ab870-e29c-451e-8a1f-23ce73f8a24a
+  ImporterName: TypeScriptAssetImporter
+  PrimaryAsset: !<reference> ea7ab870-e29c-451e-8a1f-23ce73f8a24a
+  PackageType: NotAPackage
+  LegacyPackagePolicy: ~
+  ExtraData:
+    {}
+  AssetDataMap:
+    TypeScriptAsset: !<own> c38f1535-730a-4e56-aa54-195681ac0a7b
+  DependentFiles:
+    []
+  ImporterSettings: !<AssetImporterSettings>
+    {}
+  CompressionSettings: !<own> 00000000-0000-0000-0000-000000000000
+- !<TypeScriptAssetData/c38f1535-730a-4e56-aa54-195681ac0a7b>
+  SvgIcon: ""
+  SetupScript:
+    code: ""
+  Description: ""
+  VersionMajor: 0
+  VersionMinor: 0
+  VersionPatch: 0
+  ComponentUid: 9bf5c53e-5020-4a3a-9e6b-12cfe231f3d8
+  ExportUid: 00000000-0000-0000-0000-000000000000
+  PackagePolicy: CanBeUnpacked
+  ScriptInputsHidden:
+    cameraTexture: false
+    captureButton: false
+    enableLogging: false
+    enableLoggingLifecycle: false
+    logText: false
+    placeholderImage: false
+  ScriptTypesHidden:
+    {}
+  ReadMe: !<reference> 00000000-0000-0000-0000-000000000000
+  DeclarationFile: !<reference> 00000000-0000-0000-0000-000000000000
+  Tags:
+    []
+  Attachments:
+    []
+  DefaultScriptInputs:
+    - cameraTexture: !<MappingBased.AssignableType> 00000000-0000-0000-0000-000000000000
+      placeholderImage: !<reference.Image> 00000000-0000-0000-0000-000000000000
+      captureButton: !<MappingBased.AssignableType_1> 00000000-0000-0000-0000-000000000000
+      logText: !<reference.Text> 00000000-0000-0000-0000-000000000000
+      enableLogging: false
+      enableLoggingLifecycle: false
+  ScriptTypes:
+    -
+      {}
+  InputLines:
+    - '// @ui {"widget":"label", "label":"<span style=\"color: #60A5FA;\">Camera Capture to Mobile</span><br/><span style=\"color: #94A3B8; font-size: 11px;\">Press the RoundButton to capture a cropped camera frame and send it to the bonded mobile app over BLE.</span>"}'
+    - '// @ui {"widget":"separator"}'
+    - '// @ui {"widget":"label", "label":"<span style=\"color: #60A5FA;\">Scene References</span>"}'
+    - '// @input AssignableType cameraTexture {"hint":"CameraTexture component on your CropCameraTextureTS object (live glasses camera feed)"}'
+    - '// @input Component.Image placeholderImage {"hint":"Placeholder Image that will show the captured still frame"}'
+    - '// @input AssignableType_1 captureButton {"hint":"RoundButton that triggers capture on release (trigger up)"}'
+    - '// @input Component.Text logText {"hint":"Text component used to display connection and transfer logs on screen"}'
+    - '// @ui {"widget":"separator"}'
+    - '// @ui {"widget":"label", "label":"<span style=\"color: #60A5FA;\">Logging</span>"}'
+    - '// @input bool enableLogging {"hint":"Enable general logging"}'
+    - '// @input bool enableLoggingLifecycle {"hint":"Enable lifecycle logging (onAwake, onStart)"}'

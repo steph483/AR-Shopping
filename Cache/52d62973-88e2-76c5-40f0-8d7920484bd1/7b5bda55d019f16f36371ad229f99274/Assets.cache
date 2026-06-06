@@ -1,0 +1,13 @@
+- !<AssetCache>
+  AssetFiles:
+    0d919577-0bde-4eba-be6a-8e1d104e2084: 52d62973-88e2-76c5-40f0-8d7920484bd1/7b5bda55d019f16f36371ad229f99274/Data/dots.png
+  Assets:
+    - !<FileTexture/0d919577-0bde-4eba-be6a-8e1d104e2084>
+      PackagePath: ""
+      FileInfo: !<FileTextureInfo>
+        Width: 512
+        Height: 512
+  SourceHash: 7b5bda55d019f16f36371ad229f99274
+  FileHash: ff6899c7702689c1e0a4151d4cc6ff9c
+  NativePackageItems:
+    []

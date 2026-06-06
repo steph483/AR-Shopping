@@ -1,0 +1,418 @@
+- !<AssetCache>
+  AssetFiles:
+    {}
+  Assets:
+    []
+  SourceHash: 174a6ab6f034ab59cb9b76ce8e3e0068
+  FileHash: ef2c119fd846e3b7774f32827ee7c33d
+  NativePackageItems:
+    - !<own> 2a7d40a2-db34-9dc0-d01a-4eba3e1d73ca
+    - !<own> d8b900eb-1674-3588-6c24-b25185aa4add
+    - !<own> 03b2fa5a-22c4-ba2f-e328-686bab63830c
+    - !<own> 340b073b-cfa2-03f9-7343-1455bc791e78
+    - !<own> 5cbdd805-7068-10c4-c9fb-044cf0a96feb
+    - !<own> f3fbc48d-67d5-aec6-ea0f-669240a5028e
+    - !<own> 0d837b71-6c0f-40eb-dae7-94c1f7e15a17
+    - !<own> 467a4e1b-9e86-0ebe-55fd-367806a56502
+    - !<own> a88236e1-0324-5f3c-d642-89a4983706d6
+    - !<own> 6475c7f0-0c09-032f-7ab4-64f2c1cd9401
+- !<AssetImportMetadata/03b2fa5a-22c4-ba2f-e328-686bab63830c>
+  ImportedAssetIds:
+    CameraModule: !<reference> 34040a72-4cad-4d9d-915f-7414cd3c4cb9
+  ImporterName: CameraModuleImporter
+  PrimaryAsset: !<reference> 34040a72-4cad-4d9d-915f-7414cd3c4cb9
+  PackageType: NotAPackage
+  LegacyPackagePolicy: ~
+  ExtraData:
+    {}
+  AssetDataMap:
+    {}
+  DependentFiles:
+    []
+  ImporterSettings: !<AssetImporterSettings>
+    {}
+  CompressionSettings: !<own> 00000000-0000-0000-0000-000000000000
+- !<SceneObject/07f060bb-b21d-4c5e-5f38-528fcb070861>
+  PrefabRemaps:
+    []
+  Name: Text
+  Enabled: true
+  Layers: 1
+  LocalTransform: !<TransformEntity>
+    Position: {x: 0.000000, y: 15.000000, z: 0.000000}
+    Rotation: {x: 0.000000, y: 0.000000, z: 0.000000}
+    Scale: {x: 1.000000, y: 1.000000, z: 1.000000}
+    HasSegmentScaleCompensation: false
+  Children:
+    []
+  Components:
+    - !<own> 9f62cd63-ddb4-4a3a-4774-e727ee22b12e
+- !<AssetImportMetadata/0d837b71-6c0f-40eb-dae7-94c1f7e15a17>
+  ImportedAssetIds:
+    Texture: !<reference> c3060e7e-94fa-4b19-8aff-075f2e32fbec
+  ImporterName: DeviceCameraTextureImporter
+  PrimaryAsset: !<reference> c3060e7e-94fa-4b19-8aff-075f2e32fbec
+  PackageType: NotAPackage
+  LegacyPackagePolicy: ~
+  ExtraData:
+    {}
+  AssetDataMap:
+    {}
+  DependentFiles:
+    []
+  ImporterSettings: !<AssetImporterSettings>
+    {}
+  CompressionSettings: !<own> 00000000-0000-0000-0000-000000000000
+- !<AssetImportMetadata/2a7d40a2-db34-9dc0-d01a-4eba3e1d73ca>
+  ImportedAssetIds:
+    ObjectPrefab: !<reference> a2560901-719f-435d-ab3c-a37aebaa8531
+  ImporterName: ObjectPrefabImporter
+  PrimaryAsset: !<reference> a2560901-719f-435d-ab3c-a37aebaa8531
+  PackageType: NotAPackage
+  LegacyPackagePolicy: ~
+  ExtraData:
+    {}
+  AssetDataMap:
+    ObjectPrefab: !<own> f4be142a-8538-4eae-9ea7-5405d0f1958c
+  DependentFiles:
+    []
+  ImporterSettings: !<AssetImporterSettings>
+    {}
+  CompressionSettings: !<own> 00000000-0000-0000-0000-000000000000
+- !<AssetImportMetadata/340b073b-cfa2-03f9-7343-1455bc791e78>
+  ImportedAssetIds:
+    NativePackageDescriptor: !<reference> 8e6a13f2-79d7-4e2f-82b2-81b3e23533ae
+  ImporterName: NativePackageDescriptorImporter
+  PrimaryAsset: !<reference> 8e6a13f2-79d7-4e2f-82b2-81b3e23533ae
+  PackageType: NotAPackage
+  LegacyPackagePolicy: ~
+  ExtraData:
+    {}
+  AssetDataMap:
+    {}
+  DependentFiles:
+    []
+  ImporterSettings: !<AssetImporterSettings>
+    {}
+  CompressionSettings: !<own> 00000000-0000-0000-0000-000000000000
+- !<AssetImportMetadata/467a4e1b-9e86-0ebe-55fd-367806a56502>
+  ImportedAssetIds:
+    Texture: !<reference> 19b09aae-b059-4551-b002-c759e908b66c
+  ImporterName: ScreenCropTextureImporter
+  PrimaryAsset: !<reference> 19b09aae-b059-4551-b002-c759e908b66c
+  PackageType: NotAPackage
+  LegacyPackagePolicy: ~
+  ExtraData:
+    {}
+  AssetDataMap:
+    {}
+  DependentFiles:
+    []
+  ImporterSettings: !<AssetImporterSettings>
+    {}
+  CompressionSettings: !<own> 00000000-0000-0000-0000-000000000000
+- !<AssetImportMetadata/5cbdd805-7068-10c4-c9fb-044cf0a96feb>
+  ImportedAssetIds:
+    JsonAsset: !<reference> 5ed43bdc-53b1-40a5-8c29-af93c5fc2f8b
+  ImporterName: JsonAssetImporter
+  PrimaryAsset: !<reference> 5ed43bdc-53b1-40a5-8c29-af93c5fc2f8b
+  PackageType: NotAPackage
+  LegacyPackagePolicy: ~
+  ExtraData:
+    {}
+  AssetDataMap:
+    {}
+  DependentFiles:
+    []
+  ImporterSettings: !<AssetImporterSettings>
+    {}
+  CompressionSettings: !<own> 00000000-0000-0000-0000-000000000000
+- !<ScriptComponent/64085342-8b01-4563-4bbd-3cf421b4517f>
+  PrefabRemaps:
+    []
+  Name: CameraTexture
+  Enabled: true
+  ScriptAsset: !<reference> 74ae0a66-62ec-42fd-9c70-e59aa9a380b6
+  ScriptInputsDefault:
+    enableLogging: true
+    enableLoggingLifecycle: true
+  ScriptTypesDefault:
+    {}
+  ScriptInputs:
+    "":
+      uiImage: !<reference.Image> 75c60143-6541-4308-6399-0094c53b9440
+      screenTexture: !<reference.Texture> 19b09aae-b059-4551-b002-c759e908b66c
+      camModule: !<reference.CameraModule> 34040a72-4cad-4d9d-915f-7414cd3c4cb9
+      cropLeft: -0.800000
+      cropRight: 0.800000
+      cropBottom: -0.800000
+      cropTop: 0.800000
+      enableLogging: false
+      enableLoggingLifecycle: false
+  ScriptTypes:
+    "":
+      {}
+- !<AssetImportMetadata/6475c7f0-0c09-032f-7ab4-64f2c1cd9401>
+  ImportedAssetIds:
+    ShaderGraph: !<reference> 5b6cbe5f-8ac6-4444-b218-be410bf791b1
+  ImporterName: ShaderGraphPassImporter
+  PrimaryAsset: !<reference> 5b6cbe5f-8ac6-4444-b218-be410bf791b1
+  PackageType: NotAPackage
+  LegacyPackagePolicy: ~
+  ExtraData:
+    {}
+  AssetDataMap:
+    {}
+  DependentFiles:
+    []
+  ImporterSettings: !<AssetImporterSettings>
+    {}
+  CompressionSettings: !<own> 00000000-0000-0000-0000-000000000000
+- !<Image/75c60143-6541-4308-6399-0094c53b9440>
+  PrefabRemaps:
+    []
+  Name: Image
+  Enabled: true
+  RenderOrder: 10
+  StretchMode: Fit
+  VerticalAlignment: Center
+  HorizontalAlignment: Center
+  MeshShadowMode: None
+  ShadowColor: {x: 1.000000, y: 1.000000, z: 1.000000, w: 1.000000}
+  ShadowDensity: 1.000000
+  Materials:
+    - !<reference> 7424ae15-c693-491a-8c46-d9d8530d5ad8
+  FlipX: false
+  FlipY: false
+  RotationAngle: 0
+  Pivot: {x: 0.000000, y: 0.000000}
+  ExtentsTarget: !<reference> 00000000-0000-0000-0000-000000000000
+- !<SceneObject/978d015e-936a-48d0-6d1b-cb3d2ad5ee89>
+  PrefabRemaps:
+    []
+  Name: CropCameraTextureTS - __PLACE_IN_SCENE
+  Enabled: true
+  Layers: 1
+  LocalTransform: !<TransformEntity>
+    Position: {x: 0.000000, y: 0.000000, z: -50.000000}
+    Rotation: {x: 0.000000, y: 0.000000, z: 0.000000}
+    Scale: {x: 1.000000, y: 1.000000, z: 1.000000}
+    HasSegmentScaleCompensation: false
+  Children:
+    - !<own> 07f060bb-b21d-4c5e-5f38-528fcb070861
+    - !<own> d3574a89-7ede-4324-434d-e3e8c14d4fb5
+  Components:
+    - !<own> 64085342-8b01-4563-4bbd-3cf421b4517f
+- !<Text/9f62cd63-ddb4-4a3a-4774-e727ee22b12e>
+  PrefabRemaps:
+    []
+  Name: Text
+  Enabled: true
+  RenderOrder: 0
+  StretchMode: Stretch
+  VerticalAlignment: Center
+  HorizontalAlignment: Center
+  MeshShadowMode: None
+  ShadowColor: {x: 1.000000, y: 1.000000, z: 1.000000, w: 1.000000}
+  ShadowDensity: 1.000000
+  Text: |-
+    This set up allows you to crop an exsiting texture. 
+    
+    Modify the offset in the Screen Crop Texture object you find in the package folder 
+  Editable: false
+  ShowEditingPreview: true
+  TouchHandler: !<reference> 00000000-0000-0000-0000-000000000000
+  SizeToFit: false
+  FontSize: 30
+  Font: !<reference> 00000000-0000-0000-0000-000000000000
+  LayoutRect:
+    left: -7.500000
+    bottom: -2.250000
+    right: 7.500000
+    top: 2.250000
+  OverflowVertical: Overflow
+  OverflowHorizontal: Wrap
+  Fill: !<TextFill>
+    Mode: Solid
+    Color: {x: 1.000000, y: 1.000000, z: 1.000000, w: 1.000000}
+    Texture: !<reference> 00000000-0000-0000-0000-000000000000
+    ColorTint: {x: 1.000000, y: 1.000000, z: 1.000000, w: 1.000000}
+    TileCount: 5.000000
+    TileZone: Rect
+    TextureStretch: FitWidth
+  BlendMode: PremultipliedAlpha
+  Outline: !<OutlineSettings>
+    Enabled: false
+    Fill: !<TextFill>
+      Mode: Solid
+      Color: {x: 0.000000, y: 0.000000, z: 0.000000, w: 1.000000}
+      Texture: !<reference> 00000000-0000-0000-0000-000000000000
+      ColorTint: {x: 1.000000, y: 1.000000, z: 1.000000, w: 1.000000}
+      TileCount: 5.000000
+      TileZone: Rect
+      TextureStretch: FitWidth
+    Size: 0.250000
+  Dropshadow: !<DropshadowSettings>
+    Enabled: false
+    Fill: !<TextFill>
+      Mode: Solid
+      Color: {x: 0.000000, y: 0.000000, z: 0.000000, w: 1.000000}
+      Texture: !<reference> 00000000-0000-0000-0000-000000000000
+      ColorTint: {x: 1.000000, y: 1.000000, z: 1.000000, w: 1.000000}
+      TileCount: 5.000000
+      TileZone: Rect
+      TextureStretch: FitWidth
+    OffsetX: 0.250000
+    OffsetY: 0.250000
+  Background: !<BackgroundSettings>
+    Enabled: true
+    Fill: !<TextFill>
+      Mode: Solid
+      Color: {x: 0.016800, y: 0.198352, z: 1.000000, w: 1.000000}
+      Texture: !<reference> 00000000-0000-0000-0000-000000000000
+      ColorTint: {x: 1.000000, y: 1.000000, z: 1.000000, w: 1.000000}
+      TileCount: 5.000000
+      TileZone: Rect
+      TextureStretch: FitWidth
+    Margins:
+      left: 0.500000
+      bottom: 0.500000
+      right: 0.500000
+      top: 0.500000
+    CornerRadius: 1.000000
+  AdvancedLayout: !<TextAdvancedLayout>
+    ExtentsTarget: !<reference> 00000000-0000-0000-0000-000000000000
+    LetterSpacing: 0.000000
+    LineSpacing: 1.000000
+    CapitalizationOverride: None
+  DepthTest: false
+  TwoSided: false
+- !<AssetImportMetadata/a88236e1-0324-5f3c-d642-89a4983706d6>
+  ImportedAssetIds:
+    TypeScriptAsset: !<reference> 74ae0a66-62ec-42fd-9c70-e59aa9a380b6
+  ImporterName: TypeScriptAssetImporter
+  PrimaryAsset: !<reference> 74ae0a66-62ec-42fd-9c70-e59aa9a380b6
+  PackageType: NotAPackage
+  LegacyPackagePolicy: ~
+  ExtraData:
+    {}
+  AssetDataMap:
+    TypeScriptAsset: !<own> c4103730-bb17-4da3-9378-5a98810a2815
+  DependentFiles:
+    []
+  ImporterSettings: !<AssetImporterSettings>
+    {}
+  CompressionSettings: !<own> 00000000-0000-0000-0000-000000000000
+- !<TypeScriptAssetData/c4103730-bb17-4da3-9378-5a98810a2815>
+  SvgIcon: ""
+  SetupScript:
+    code: ""
+  Description: ""
+  VersionMajor: 0
+  VersionMinor: 0
+  VersionPatch: 0
+  ComponentUid: 9b3ed587-5164-428f-8b5a-6528cdc96668
+  ExportUid: 00000000-0000-0000-0000-000000000000
+  PackagePolicy: CanBeUnpacked
+  ScriptInputsHidden:
+    camModule: false
+    cropBottom: false
+    cropLeft: false
+    cropRight: false
+    cropTop: false
+    enableLogging: false
+    enableLoggingLifecycle: false
+    screenTexture: false
+    uiImage: false
+  ScriptTypesHidden:
+    {}
+  ReadMe: !<reference> 00000000-0000-0000-0000-000000000000
+  DeclarationFile: !<reference> 00000000-0000-0000-0000-000000000000
+  Tags:
+    []
+  Attachments:
+    []
+  DefaultScriptInputs:
+    - uiImage: !<reference.Image> 00000000-0000-0000-0000-000000000000
+      screenTexture: !<reference.Texture> 00000000-0000-0000-0000-000000000000
+      camModule: !<reference.CameraModule> 00000000-0000-0000-0000-000000000000
+      cropLeft: -0.200000
+      cropRight: 0.200000
+      cropBottom: -0.200000
+      cropTop: 0.200000
+      enableLogging: false
+      enableLoggingLifecycle: false
+  ScriptTypes:
+    -
+      {}
+  InputLines:
+    - '// @ui {"widget":"separator"}'
+    - '// @ui {"widget":"label", "label":"<span style=\"color: #60A5FA;\">UI Configuration</span>"}'
+    - '// @ui {"widget":"label", "label":"<span style=\"color: #94A3B8; font-size: 11px;\">Specify the UI image component and texture resources</span>"}'
+    - '// @input Component.Image uiImage {"hint":"The image component that will display the cropped camera frame."}'
+    - '// @input Asset.Texture screenTexture {"hint":"Texture used for processing camera frames"}'
+    - '// @input Asset.CameraModule camModule {"hint":"Camera module reference from the scene."}'
+    - '// @ui {"widget":"separator"}'
+    - '// @ui {"widget":"label", "label":"<span style=\"color: #60A5FA;\">Crop Rectangle Settings</span>"}'
+    - '// @ui {"widget":"label", "label":"<span style=\"color: #94A3B8; font-size: 11px;\">Define the crop region using normalized coordinates (-1 to 1) for left, right, bottom, and top boundaries</span>"}'
+    - '// @input float cropLeft = -0.2 {"hint":"Crop rectangle left boundary (-1 to 1)."}'
+    - '// @input float cropRight = 0.2 {"hint":"Crop rectangle right boundary (-1 to 1)."}'
+    - '// @input float cropBottom = -0.2 {"hint":"Crop rectangle bottom boundary (-1 to 1)."}'
+    - '// @input float cropTop = 0.2 {"hint":"Crop rectangle top boundary (-1 to 1)."}'
+    - '// @ui {"widget":"separator"}'
+    - '// @ui {"widget":"label", "label":"<span style=\"color: #60A5FA;\">Logging Configuration</span>"}'
+    - '// @ui {"widget":"label", "label":"<span style=\"color: #94A3B8; font-size: 11px;\">Control logging output for this script instance</span>"}'
+    - '// @input bool enableLogging {"hint":"Enable general logging (camera setup, texture processing, etc.)"}'
+    - '// @input bool enableLoggingLifecycle {"hint":"Enable lifecycle logging (onAwake, onStart, onUpdate, onDestroy, etc.)"}'
+- !<SceneObject/d3574a89-7ede-4324-434d-e3e8c14d4fb5>
+  PrefabRemaps:
+    []
+  Name: CaptureCropped
+  Enabled: true
+  Layers: 1
+  LocalTransform: !<TransformEntity>
+    Position: {x: 0.000000, y: 0.000000, z: 1.000000}
+    Rotation: {x: 0.000000, y: 0.000000, z: 0.000000}
+    Scale: {x: 17.000000, y: 17.000000, z: 1.000000}
+    HasSegmentScaleCompensation: false
+  Children:
+    []
+  Components:
+    - !<own> 75c60143-6541-4308-6399-0094c53b9440
+- !<AssetImportMetadata/d8b900eb-1674-3588-6c24-b25185aa4add>
+  ImportedAssetIds:
+    Material: !<reference> 7424ae15-c693-491a-8c46-d9d8530d5ad8
+  ImporterName: MaterialImporter
+  PrimaryAsset: !<reference> 7424ae15-c693-491a-8c46-d9d8530d5ad8
+  PackageType: NotAPackage
+  LegacyPackagePolicy: ~
+  ExtraData:
+    {}
+  AssetDataMap:
+    {}
+  DependentFiles:
+    []
+  ImporterSettings: !<AssetImporterSettings>
+    {}
+  CompressionSettings: !<own> 00000000-0000-0000-0000-000000000000
+- !<AssetImportMetadata/f3fbc48d-67d5-aec6-ea0f-669240a5028e>
+  ImportedAssetIds:
+    MarkdownAsset: !<reference> 457a6e9b-1f7a-4b6f-865d-d445adbbc51e
+  ImporterName: MarkdownAssetImporter
+  PrimaryAsset: !<reference> 457a6e9b-1f7a-4b6f-865d-d445adbbc51e
+  PackageType: NotAPackage
+  LegacyPackagePolicy: ~
+  ExtraData:
+    {}
+  AssetDataMap:
+    {}
+  DependentFiles:
+    []
+  ImporterSettings: !<AssetImporterSettings>
+    {}
+  CompressionSettings: !<own> 00000000-0000-0000-0000-000000000000
+- !<ObjectPrefabAssetData/f4be142a-8538-4eae-9ea7-5405d0f1958c>
+  Prototype: !<ObjectOwner/22396598-3557-493d-b27d-181c6168a378>
+    PackagePath: ""
+    objects:
+      - !<own> 978d015e-936a-48d0-6d1b-cb3d2ad5ee89

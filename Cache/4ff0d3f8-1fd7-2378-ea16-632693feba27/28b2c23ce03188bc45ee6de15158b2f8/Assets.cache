@@ -1,0 +1,13 @@
+- !<AssetCache>
+  AssetFiles:
+    4e728db6-3149-481e-94a5-a70f8d3d5125: 4ff0d3f8-1fd7-2378-ea16-632693feba27/28b2c23ce03188bc45ee6de15158b2f8/Data/C-icon.png
+  Assets:
+    - !<FileTexture/4e728db6-3149-481e-94a5-a70f8d3d5125>
+      PackagePath: ""
+      FileInfo: !<FileTextureInfo>
+        Width: 96
+        Height: 96
+  SourceHash: 28b2c23ce03188bc45ee6de15158b2f8
+  FileHash: 41cff139d94df154fbfe0d8db7b1baed
+  NativePackageItems:
+    []

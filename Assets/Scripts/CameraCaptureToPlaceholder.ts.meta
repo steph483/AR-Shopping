@@ -1,0 +1,61 @@
+- !<AssetImportMetadata/05c93b28-54e3-4778-97ea-f65aa8a4342d>
+  ImportedAssetIds:
+    TypeScriptAsset: !<reference> 6f2b8482-ef68-4abc-8801-1fc79382122f
+  ImporterName: TypeScriptAssetImporter
+  PrimaryAsset: !<reference> 6f2b8482-ef68-4abc-8801-1fc79382122f
+  PackageType: NotAPackage
+  LegacyPackagePolicy: ~
+  ExtraData:
+    {}
+  AssetDataMap:
+    TypeScriptAsset: !<own> 0b986a23-bc88-473e-a4e5-6bc048bccfa8
+  DependentFiles:
+    []
+  ImporterSettings: !<AssetImporterSettings>
+    {}
+  CompressionSettings: !<own> 00000000-0000-0000-0000-000000000000
+- !<TypeScriptAssetData/0b986a23-bc88-473e-a4e5-6bc048bccfa8>
+  SvgIcon: ""
+  SetupScript:
+    code: ""
+  Description: ""
+  VersionMajor: 0
+  VersionMinor: 0
+  VersionPatch: 0
+  ComponentUid: eaa7a1d3-fbe8-44a4-aa4d-47ba69839399
+  ExportUid: 00000000-0000-0000-0000-000000000000
+  PackagePolicy: CanBeUnpacked
+  ScriptInputsHidden:
+    cameraTexture: false
+    captureButton: false
+    enableLogging: false
+    enableLoggingLifecycle: false
+    placeholderImage: false
+  ScriptTypesHidden:
+    {}
+  ReadMe: !<reference> 00000000-0000-0000-0000-000000000000
+  DeclarationFile: !<reference> 00000000-0000-0000-0000-000000000000
+  Tags:
+    []
+  Attachments:
+    []
+  DefaultScriptInputs:
+    - cameraTexture: !<MappingBased.AssignableType> 00000000-0000-0000-0000-000000000000
+      placeholderImage: !<reference.Image> 00000000-0000-0000-0000-000000000000
+      captureButton: !<MappingBased.AssignableType_1> 00000000-0000-0000-0000-000000000000
+      enableLogging: false
+      enableLoggingLifecycle: false
+  ScriptTypes:
+    -
+      {}
+  InputLines:
+    - '// @ui {"widget":"label", "label":"<span style=\"color: #60A5FA;\">Camera Capture to Placeholder</span><br/><span style=\"color: #94A3B8; font-size: 11px;\">Press the RoundButton to freeze the current cropped camera frame onto the placeholder image.</span>"}'
+    - '// @ui {"widget":"separator"}'
+    - '// @ui {"widget":"label", "label":"<span style=\"color: #60A5FA;\">Scene References</span>"}'
+    - '// @input AssignableType cameraTexture {"hint":"CameraTexture component on your CropCameraTextureTS object (live glasses camera feed)"}'
+    - '// @input Component.Image placeholderImage {"hint":"Placeholder Image that will show the captured still frame"}'
+    - '// @input AssignableType_1 captureButton {"hint":"RoundButton that triggers capture on release (trigger up)"}'
+    - '// @ui {"widget":"separator"}'
+    - '// @ui {"widget":"label", "label":"<span style=\"color: #60A5FA;\">Logging</span>"}'
+    - '// @input bool enableLogging {"hint":"Enable general logging"}'
+    - '// @input bool enableLoggingLifecycle {"hint":"Enable lifecycle logging (onAwake, onStart)"}'

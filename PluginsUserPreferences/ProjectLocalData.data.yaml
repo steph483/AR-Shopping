@@ -1,0 +1,9 @@
+data:
+  externalSources:
+    - 143422b7-2dbd-478a-998c-ee92574723af: "C:/Users/senri/AppData/Local/Snap/Lens Studio/LibraryComponents/SpectaclesInteractionKit@0.17.2/SpectaclesInteractionKit.lspkg"
+    - 34844a75-ac3f-45c1-b0d8-308e62d96bca: "C:/Users/senri/AppData/Local/Snap/Lens Studio/LibraryComponents/SnapDecorators@1.0.0/SnapDecorators.lspkg"
+    - 4caa5c24-cb16-45be-a406-ffc7da513607: "C:/Users/senri/AppData/Local/Snap/Lens Studio/LibraryComponents/CropCameraTexture@1.2.0/CropCameraTexture.lspkg"
+    - 6814dcaa-07b0-47f8-8a0c-bf20c791fc49: "C:/Program Files/Snap Inc/Lens Studio/JsPlugins/PresetsRegistry/Assets/Resources/flat.ss_graph"
+    - 8019b06f-fa6d-45f7-89ed-829b270da2ad: "C:/Users/senri/AppData/Local/Snap/Lens Studio/LibraryComponents/Utilities@1.0.0/Utilities.lspkg"
+    - 81e61a7b-28e7-4f88-8a5a-1f1414002da4: "C:/Users/senri/AppData/Local/Snap/Lens Studio/LibraryComponents/SpectaclesUIKit@0.1.5/SpectaclesUIKit.lspkg"
+    - b7f6ae76-9927-4d10-b99b-d97a0949fc3f: "C:/Users/senri/AppData/Local/Snap/Lens Studio/LibraryComponents/SpectaclesInteractionKitExamples@0.17.2/SpectaclesInteractionKitExamples.lspkg"

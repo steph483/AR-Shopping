@@ -1,0 +1,10 @@
+- !<AssetCache>
+  AssetFiles:
+    9f58e065-72d6-4500-be5f-e03f8a792c7c: 25360324-6c11-67c5-bfc7-f0a671659cc3/2a2cb7760f54da594538129e65fe34db/Data/ui-rocket-ignition_c-1db_stereo4824.wav
+  Assets:
+    - !<FileAudioTrack/9f58e065-72d6-4500-be5f-e03f8a792c7c>
+      PackagePath: ""
+  SourceHash: 2a2cb7760f54da594538129e65fe34db
+  FileHash: 7293d894eacfd45e9564cb9a57ad5a1a
+  NativePackageItems:
+    []

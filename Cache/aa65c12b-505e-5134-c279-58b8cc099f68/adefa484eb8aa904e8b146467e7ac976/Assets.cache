@@ -1,0 +1,13 @@
+- !<AssetCache>
+  AssetFiles:
+    f0d8b864-745e-43f3-8a1d-50eeb78a3465: aa65c12b-505e-5134-c279-58b8cc099f68/adefa484eb8aa904e8b146467e7ac976/Data/nose-cone_rocket-A.png
+  Assets:
+    - !<FileTexture/f0d8b864-745e-43f3-8a1d-50eeb78a3465>
+      PackagePath: ""
+      FileInfo: !<FileTextureInfo>
+        Width: 450
+        Height: 450
+  SourceHash: adefa484eb8aa904e8b146467e7ac976
+  FileHash: 62a9853340eea5871cc1c622b5fea6ab
+  NativePackageItems:
+    []
