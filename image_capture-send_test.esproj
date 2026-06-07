@@ -15,7 +15,7 @@ metaInfo:
     []
   lensName: SpecsMobileKit
   lensDescriptors:
-    []
+    - EXPERIMENTAL_API
   lensApplicability:
     - Front
     - Back

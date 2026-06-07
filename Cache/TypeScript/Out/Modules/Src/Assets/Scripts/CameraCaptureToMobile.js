@@ -74,7 +74,7 @@ let CameraCaptureToMobile = (() => {
             this.session = null;
             this.isSending = false;
             this.isEditor = global.deviceInfoSystem.isEditor();
-            this.chunkSize = 8192;
+            this.chunkSize = 2048;
         }
         __initialize() {
             super.__initialize();
@@ -88,7 +88,7 @@ let CameraCaptureToMobile = (() => {
             this.session = null;
             this.isSending = false;
             this.isEditor = global.deviceInfoSystem.isEditor();
-            this.chunkSize = 8192;
+            this.chunkSize = 2048;
         }
         onAwake() {
             this.logger = new Logger_1.Logger("CameraCaptureToMobile", this.enableLogging || this.enableLoggingLifecycle, true);
@@ -196,6 +196,7 @@ let CameraCaptureToMobile = (() => {
             }, CompressionQuality.IntermediateQuality, EncodingType.Jpg);
         }
         sendBase64(session, base64) {
+            const self = this;
             const transferId = Date.now().toString() + "-" + Math.floor(Math.random() * 100000).toString();
             const chunks = [];
             let i = 0;
@@ -203,14 +204,22 @@ let CameraCaptureToMobile = (() => {
                 chunks.push(base64.substring(i, i + this.chunkSize));
                 i += this.chunkSize;
             }
-            session.sendData(JSON.stringify({
+            const startMsg = JSON.stringify({
                 op: "img_start",
                 id: transferId,
                 total: chunks.length,
                 bytes: base64.length
-            }));
-            this.appendLine(`Sent img_start: ${chunks.length} chunks, ${base64.length} bytes`);
-            this.sendNextChunk(session, chunks, transferId, 0);
+            });
+            session
+                .sendRequest(startMsg)
+                .then((ack) => {
+                self.appendLine(`img_start ack (${chunks.length} chunks, ${base64.length} bytes): ${ack}`);
+                self.sendNextChunk(session, chunks, transferId, 0);
+            })
+                .catch((error) => {
+                self.appendLine("img_start failed: " + error);
+                self.isSending = false;
+            });
         }
         sendNextChunk(session, chunks, transferId, index) {
             const self = this;

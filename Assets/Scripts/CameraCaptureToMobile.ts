@@ -46,7 +46,7 @@ export class CameraCaptureToMobile extends BaseScriptComponent {
   private session: any = null
   private isSending = false
   private isEditor = global.deviceInfoSystem.isEditor()
-  private chunkSize = 8192
+  private chunkSize = 2048
 
   onAwake(): void {
     this.logger = new Logger(
@@ -187,6 +187,7 @@ export class CameraCaptureToMobile extends BaseScriptComponent {
   }
 
   private sendBase64(session: any, base64: string): void {
+    const self = this
     const transferId = Date.now().toString() + "-" + Math.floor(Math.random() * 100000).toString()
     const chunks: string[] = []
     let i = 0
@@ -195,16 +196,23 @@ export class CameraCaptureToMobile extends BaseScriptComponent {
       i += this.chunkSize
     }
 
-    session.sendData(
-      JSON.stringify({
-        op: "img_start",
-        id: transferId,
-        total: chunks.length,
-        bytes: base64.length
+    const startMsg = JSON.stringify({
+      op: "img_start",
+      id: transferId,
+      total: chunks.length,
+      bytes: base64.length
+    })
+
+    session
+      .sendRequest(startMsg)
+      .then((ack: string) => {
+        self.appendLine(`img_start ack (${chunks.length} chunks, ${base64.length} bytes): ${ack}`)
+        self.sendNextChunk(session, chunks, transferId, 0)
       })
-    )
-    this.appendLine(`Sent img_start: ${chunks.length} chunks, ${base64.length} bytes`)
-    this.sendNextChunk(session, chunks, transferId, 0)
+      .catch((error: string) => {
+        self.appendLine("img_start failed: " + error)
+        self.isSending = false
+      })
   }
 
   private sendNextChunk(session: any, chunks: string[], transferId: string, index: number): void {

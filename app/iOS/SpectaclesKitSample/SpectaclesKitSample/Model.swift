@@ -199,6 +199,11 @@ extension Model: SpectaclesRequestDelegate {
                         self.onReceiveMessage(message: message)
                     }
                     callRequest.yield("ok".data(using: .utf8)!, isComplete: true)
+                } else if body.contains("\"op\":\"img_") {
+                    await MainActor.run {
+                        self.onReceiveMessage(message: "Image transfer message could not be parsed")
+                    }
+                    callRequest.yield("ok".data(using: .utf8)!, isComplete: true)
                 } else {
                     await MainActor.run {
                         self.onReceiveMessage(message: body)
@@ -238,21 +243,40 @@ extension Model: SpectaclesRequestDelegate {
     }
 
     private func handleImageTransferCall(_ body: String) -> String? {
-        guard let message = decodeTransferMessage(body), message.op == "img_chunk" else {
+        guard let message = decodeTransferMessage(body) else {
             return nil
         }
 
-        guard let transferId = message.id,
-              let index = message.i,
-              let data = message.data,
-              let transfer = activeTransfer,
-              transfer.id == transferId
-        else {
-            return "Image chunk ignored (no active transfer)"
-        }
+        switch message.op {
+        case "img_start":
+            guard let transferId = message.id,
+                  let total = message.total,
+                  let bytes = message.bytes
+            else {
+                return "Image transfer start ignored (invalid payload)"
+            }
+            activeTransfer = ImageTransferState(id: transferId, totalChunks: total, expectedBytes: bytes)
+            Task { @MainActor in
+                self.receivedImage = nil
+            }
+            return "Image transfer started (\(total) chunks, \(bytes) bytes)"
 
-        transfer.storeChunk(index: index, data: data)
-        return "Image chunk \(index + 1)/\(transfer.totalChunks) received"
+        case "img_chunk":
+            guard let transferId = message.id,
+                  let index = message.i,
+                  let data = message.data,
+                  let transfer = activeTransfer,
+                  transfer.id == transferId
+            else {
+                return "Image chunk ignored (no active transfer)"
+            }
+
+            transfer.storeChunk(index: index, data: data)
+            return "Image chunk \(index + 1)/\(transfer.totalChunks) received"
+
+        default:
+            return nil
+        }
     }
 
     private func handleImageTransferNotify(_ body: String) -> String {
