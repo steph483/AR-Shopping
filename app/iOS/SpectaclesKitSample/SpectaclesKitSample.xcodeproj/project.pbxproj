@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		C4E1A0022D10000100000001 /* ImageTransferReceiver.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4E1A0012D10000100000001 /* ImageTransferReceiver.swift */; };
 		C45E9D062CAE05C6009CF62D /* Model.swift in Sources */ = {isa = PBXBuildFile; fileRef = C45E9D052CAE05C3009CF62D /* Model.swift */; };
 		C45EE6222CB4581F006524B9 /* BondingRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = C45EE6212CB4581F006524B9 /* BondingRow.swift */; };
 		C467467F2C8F767600C17466 /* SpectaclesKitSampleApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = C467467E2C8F767600C17466 /* SpectaclesKitSampleApp.swift */; };
@@ -20,6 +21,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		C4E1A0012D10000100000001 /* ImageTransferReceiver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageTransferReceiver.swift; sourceTree = "<group>"; };
 		C442E4212C92582500BAAA40 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		C45E9D052CAE05C3009CF62D /* Model.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Model.swift; sourceTree = "<group>"; };
 		C45EE6212CB4581F006524B9 /* BondingRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BondingRow.swift; sourceTree = "<group>"; };
@@ -78,6 +80,7 @@
 				C4DE71A42CB9916F00A385BC /* SessionView.swift */,
 				C46746802C8F767600C17466 /* BondingList.swift */,
 				C45EE6212CB4581F006524B9 /* BondingRow.swift */,
+				C4E1A0012D10000100000001 /* ImageTransferReceiver.swift */,
 				C45E9D052CAE05C3009CF62D /* Model.swift */,
 				C46746822C8F767700C17466 /* Assets.xcassets */,
 				C4A48C962CCC57A400472EAF /* test.png */,
@@ -176,6 +179,7 @@
 			files = (
 				C45EE6222CB4581F006524B9 /* BondingRow.swift in Sources */,
 				C4DE71A52CB9916F00A385BC /* SessionView.swift in Sources */,
+				C4E1A0022D10000100000001 /* ImageTransferReceiver.swift in Sources */,
 				C45E9D062CAE05C6009CF62D /* Model.swift in Sources */,
 				C46746812C8F767600C17466 /* BondingList.swift in Sources */,
 				C467467F2C8F767600C17466 /* SpectaclesKitSampleApp.swift in Sources */,
