@@ -1763,11 +1763,11 @@
 - !<SceneObject/149a3542-87b4-4e47-a51e-a6ac2875d21e>
   PrefabRemaps:
     []
-  Name: Next
+  Name: CaptureButton
   Enabled: true
   Layers: 1
   LocalTransform: !<TransformEntity>
-    Position: {x: 2.000000, y: 3.576328, z: 0.000000}
+    Position: {x: 0.000000, y: -14.000000, z: -50.000000}
     Rotation: {x: 0.000000, y: 0.000000, z: 0.000000}
     Scale: {x: 1.000000, y: 1.000000, z: 1.000000}
     HasSegmentScaleCompensation: false
@@ -6378,7 +6378,6 @@
     HasSegmentScaleCompensation: false
   Children:
     - !<own> 41a7b1fb-650e-4eda-8f42-f026f8206be4
-    - !<own> 149a3542-87b4-4e47-a51e-a6ac2875d21e
   Components:
     []
 - !<ScriptComponent/44e03fbc-2be6-4786-9d40-e944dc7244a9>
@@ -9334,6 +9333,8 @@
     HasSegmentScaleCompensation: false
   Children:
     - !<own> a06124ec-7b03-43bb-8614-1a50b2468b77
+    - !<own> f8a3b2c1-4e5d-6f7a-8b9c-0d1e2f3a4b5c
+    - !<own> 149a3542-87b4-4e47-a51e-a6ac2875d21e
   Components:
     - !<own> 9272bd37-11c7-4982-9d7f-1e62e14d0ab1
     - !<own> f1a5f5d2-267f-4aae-b554-fe2a83d3a579
@@ -13342,10 +13343,10 @@
       uiImage: !<reference.Image> 2e80f200-ab50-44cd-993e-20840b617c26
       screenTexture: !<reference.Texture> 19b09aae-b059-4551-b002-c759e908b66c
       camModule: !<reference.CameraModule> 34040a72-4cad-4d9d-915f-7414cd3c4cb9
-      cropLeft: -0.800000
-      cropRight: 0.800000
-      cropBottom: -0.800000
-      cropTop: 0.800000
+      cropLeft: -0.400000
+      cropRight: 0.400000
+      cropBottom: -0.400000
+      cropTop: 0.400000
       enableLogging: false
       enableLoggingLifecycle: false
   ScriptTypes:
@@ -19898,6 +19899,9 @@
   Enabled: true
   ScriptAsset: !<reference> ea7ab870-e29c-451e-8a1f-23ce73f8a24a
   ScriptInputsDefault:
+    showCapturePreviewOnGlasses: true
+    useHighResStillCapture: true
+    encodeGrayscale: true
     enableLogging: true
     enableLoggingLifecycle: true
   ScriptTypesDefault:
@@ -19905,9 +19909,17 @@
   ScriptInputs:
     "":
       cameraTexture: !<MappingBased.AssignableType> 90c2e591-b7e4-42b9-b845-dad46b635853
+      liveFeedObject: !<reference.SceneObject> d6171be4-6fa8-4034-b75c-fbca10f54457
+      reticleObject: !<reference.SceneObject> f8a3b2c1-4e5d-6f7a-8b9c-0d1e2f3a4b5c
       placeholderImage: !<reference.Image> cacfa666-2e83-4ba1-8c9b-7947954779a8
       captureButton: !<MappingBased.AssignableType_1> e27bf77f-f18c-4752-a3a1-c115343d6bd7
       logText: !<reference.Text> 943d29bc-32c7-41f3-8f12-ad4ec0c5111e
+      showCapturePreviewOnGlasses: false
+      cropHalfSize: 0.220000
+      cropHorizontalOffset: 0.280000
+      useHighResStillCapture: true
+      encodeGrayscale: true
+      maximumJpegQuality: true
       enableLogging: false
       enableLoggingLifecycle: false
   ScriptTypes:
@@ -22186,6 +22198,87 @@
     CapitalizationOverride: None
   DepthTest: false
   TwoSided: false
+- !<Text/e7b6a594-3d2c-1b0a-9f8e-7d6c5b4a3928>
+  PrefabRemaps:
+    []
+  Name: ReticleCrosshair
+  Enabled: true
+  RenderOrder: 15
+  StretchMode: Stretch
+  VerticalAlignment: Center
+  HorizontalAlignment: Center
+  MeshShadowMode: None
+  ShadowColor: {x: 1.000000, y: 1.000000, z: 1.000000, w: 1.000000}
+  ShadowDensity: 1.000000
+  Text: +
+  Editable: false
+  ShowEditingPreview: true
+  TouchHandler: !<reference> 00000000-0000-0000-0000-000000000000
+  SizeToFit: false
+  FontSize: 18
+  Font: !<reference> 00000000-0000-0000-0000-000000000000
+  LayoutRect:
+    left: -1.500000
+    bottom: -1.500000
+    right: 1.500000
+    top: 1.500000
+  OverflowVertical: Overflow
+  OverflowHorizontal: Overflow
+  Fill: !<TextFill>
+    Mode: Solid
+    Color: {x: 1.000000, y: 1.000000, z: 1.000000, w: 0.500000}
+    Texture: !<reference> 00000000-0000-0000-0000-000000000000
+    ColorTint: {x: 1.000000, y: 1.000000, z: 1.000000, w: 1.000000}
+    TileCount: 5.000000
+    TileZone: Rect
+    TextureStretch: FitWidth
+  BlendMode: PremultipliedAlpha
+  Outline: !<OutlineSettings>
+    Enabled: false
+    Fill: !<TextFill>
+      Mode: Solid
+      Color: {x: 0.000000, y: 0.000000, z: 0.000000, w: 1.000000}
+      Texture: !<reference> 00000000-0000-0000-0000-000000000000
+      ColorTint: {x: 1.000000, y: 1.000000, z: 1.000000, w: 1.000000}
+      TileCount: 5.000000
+      TileZone: Rect
+      TextureStretch: FitWidth
+    Size: 0.250000
+  Dropshadow: !<DropshadowSettings>
+    Enabled: false
+    Fill: !<TextFill>
+      Mode: Solid
+      Color: {x: 0.000000, y: 0.000000, z: 0.000000, w: 1.000000}
+      Texture: !<reference> 00000000-0000-0000-0000-000000000000
+      ColorTint: {x: 1.000000, y: 1.000000, z: 1.000000, w: 1.000000}
+      TileCount: 5.000000
+      TileZone: Rect
+      TextureStretch: FitWidth
+    OffsetX: 0.000000
+    OffsetY: 0.000000
+  Background: !<BackgroundSettings>
+    Enabled: false
+    Fill: !<TextFill>
+      Mode: Solid
+      Color: {x: 0.000000, y: 0.000000, z: 0.000000, w: 1.000000}
+      Texture: !<reference> 00000000-0000-0000-0000-000000000000
+      ColorTint: {x: 1.000000, y: 1.000000, z: 1.000000, w: 1.000000}
+      TileCount: 5.000000
+      TileZone: Rect
+      TextureStretch: FitWidth
+    Margins:
+      left: 0.000000
+      bottom: 0.000000
+      right: 0.000000
+      top: 0.000000
+    CornerRadius: 0.000000
+  AdvancedLayout: !<TextAdvancedLayout>
+    ExtentsTarget: !<reference> 00000000-0000-0000-0000-000000000000
+    LetterSpacing: 0.000000
+    LineSpacing: 1.000000
+    CapitalizationOverride: None
+  DepthTest: false
+  TwoSided: false
 - !<Text/e7d22aa5-3f4b-48d3-9bd3-d9d0ee7c87a3>
   PrefabRemaps:
     []
@@ -24227,6 +24320,21 @@
   ScriptTypes:
     "":
       {}
+- !<SceneObject/f8a3b2c1-4e5d-6f7a-8b9c-0d1e2f3a4b5c>
+  PrefabRemaps:
+    []
+  Name: ScanReticle
+  Enabled: false
+  Layers: 1
+  LocalTransform: !<TransformEntity>
+    Position: {x: 0.000000, y: 0.000000, z: -50.000000}
+    Rotation: {x: 0.000000, y: 0.000000, z: 0.000000}
+    Scale: {x: 4.250000, y: 4.250000, z: 1.000000}
+    HasSegmentScaleCompensation: false
+  Children:
+    []
+  Components:
+    - !<own> e7b6a594-3d2c-1b0a-9f8e-7d6c5b4a3928
 - !<SceneObject/f8c42a1d-cb15-4fd8-9b4b-af88d9029408>
   PrefabRemaps:
     []

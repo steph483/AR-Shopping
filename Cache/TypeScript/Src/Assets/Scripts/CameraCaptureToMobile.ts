@@ -19,7 +19,15 @@ export class CameraCaptureToMobile extends BaseScriptComponent {
   cameraTexture: CameraTexture
 
   @input
-  @hint("Placeholder Image that will show the captured still frame")
+  @hint("SceneObject that displays the live camera feed (e.g. CaptureCropped). Hidden at runtime.")
+  liveFeedObject: SceneObject
+
+  @input
+  @hint("Head-locked reticle (child of Camera). Centered on capture region — e.g. ScanReticle")
+  reticleObject: SceneObject
+
+  @input
+  @hint("Placeholder Image used only when showCapturePreviewOnGlasses is enabled")
   placeholderImage: Image
 
   @input
@@ -29,6 +37,36 @@ export class CameraCaptureToMobile extends BaseScriptComponent {
   @input
   @hint("Text component used to display connection and transfer logs on screen")
   logText: Text
+
+  @ui.separator
+  @ui.label('<span style="color: #60A5FA;">Scan View</span>')
+  @input
+  @hint("Show the captured still on glasses after each scan. Off sends to phone only.")
+  showCapturePreviewOnGlasses: boolean = false
+
+  @input
+  @hint("Half-size of the square crop region in normalized coords. Smaller = more zoom (0.22 ≈ 44% of frame).")
+  cropHalfSize: number = 0.22
+
+  @input
+  @hint("Shift capture region horizontally to match reticle. Positive moves capture right (fixes subject appearing too far right).")
+  cropHorizontalOffset: number = 0.08
+
+  @ui.separator
+  @ui.label('<span style="color: #60A5FA;">Capture Quality</span>')
+  @input
+  @hint("Use CameraModule.requestImage for a 3200x2400 still, then crop. Much sharper than the live stream.")
+  useHighResStillCapture: boolean = true
+
+  @ui.separator
+  @ui.label('<span style="color: #60A5FA;">Barcode Encode</span>')
+  @input
+  @hint("Convert to grayscale before JPEG encode. Smaller files, better for barcode scanning.")
+  encodeGrayscale: boolean = true
+
+  @input
+  @hint("Use maximum JPEG quality (larger transfer, less compression grain). Off uses high quality.")
+  maximumJpegQuality: boolean = false
 
   @ui.separator
   @ui.label('<span style="color: #60A5FA;">Logging</span>')
@@ -41,8 +79,9 @@ export class CameraCaptureToMobile extends BaseScriptComponent {
   enableLoggingLifecycle: boolean = false
 
   private logger: Logger
+  private camModule: CameraModule = require("LensStudio:CameraModule") as CameraModule
   private module = require("LensStudio:SpectaclesMobileKitModule")
-  private placeholderPass: Pass
+  private placeholderPass: Pass | null = null
   private session: any = null
   private isSending = false
   private isEditor = global.deviceInfoSystem.isEditor()
@@ -73,7 +112,8 @@ export class CameraCaptureToMobile extends BaseScriptComponent {
     }
 
     ValidationUtils.assertNotNull(this.cameraTexture, "Assign the CameraTexture component from CropCameraTextureTS")
-    ValidationUtils.assertNotNull(this.placeholderImage, "Assign the placeholder Image")
+    ValidationUtils.assertNotNull(this.liveFeedObject, "Assign the live feed SceneObject (CaptureCropped)")
+    ValidationUtils.assertNotNull(this.reticleObject, "Assign the reticle SceneObject (ScanReticle)")
     ValidationUtils.assertNotNull(this.captureButton, "Assign the RoundButton used to capture")
     ValidationUtils.assertNotNull(this.logText, "Assign the log Text (e.g. Test Log under Camera)")
 
@@ -81,9 +121,15 @@ export class CameraCaptureToMobile extends BaseScriptComponent {
       this.logText.text = "Camera Capture → Mobile:"
     }
 
-    const placeholderMaterial = this.placeholderImage.mainMaterial.clone()
-    this.placeholderImage.mainMaterial = placeholderMaterial
-    this.placeholderPass = placeholderMaterial.mainPass
+    this.setupScanView()
+    this.applyCaptureCrop()
+
+    if (this.showCapturePreviewOnGlasses) {
+      ValidationUtils.assertNotNull(this.placeholderImage, "Assign the placeholder Image when preview is enabled")
+      const placeholderMaterial = this.placeholderImage.mainMaterial.clone()
+      this.placeholderImage.mainMaterial = placeholderMaterial
+      this.placeholderPass = placeholderMaterial.mainPass
+    }
 
     this.captureButton.onInitialized.add(() => {
       this.captureButton.onTriggerUp.add(() => {
@@ -94,6 +140,107 @@ export class CameraCaptureToMobile extends BaseScriptComponent {
 
     this.appendLine("Script started")
     this.startMobileSession()
+  }
+
+  private setupScanView(): void {
+    if (this.liveFeedObject) {
+      this.liveFeedObject.enabled = false
+    }
+    if (this.reticleObject) {
+      this.reticleObject.enabled = true
+    }
+    if (!this.showCapturePreviewOnGlasses && this.placeholderImage) {
+      this.placeholderImage.getSceneObject().enabled = false
+    }
+  }
+
+  private getCropRect(): { left: number; right: number; bottom: number; top: number } {
+    const half = this.cropHalfSize
+    const shiftX = this.cropHorizontalOffset
+    return {
+      left: -half + shiftX,
+      right: half + shiftX,
+      bottom: -half,
+      top: half
+    }
+  }
+
+  private applyCaptureCrop(): void {
+    const rect = this.getCropRect()
+    this.cameraTexture.cropLeft = rect.left
+    this.cameraTexture.cropRight = rect.right
+    this.cameraTexture.cropBottom = rect.bottom
+    this.cameraTexture.cropTop = rect.top
+  }
+
+  private getCropScreenTexture(): Texture {
+    const screenTexture = (this.cameraTexture as { screenTexture?: Texture }).screenTexture
+    ValidationUtils.assertNotNull(screenTexture, "CameraTexture has no screenTexture (Screen Crop Texture)")
+    return screenTexture
+  }
+
+  private applyCropToTexture(source: Texture): Texture {
+    const cropTexture = this.getCropScreenTexture()
+    const cropProvider = cropTexture.control as RectCropTextureProvider
+    ValidationUtils.assertNotNull(cropProvider, "Screen crop texture has no RectCropTextureProvider")
+
+    cropProvider.inputTexture = source
+    const rect = this.getCropRect()
+    cropProvider.cropRect.left = rect.left
+    cropProvider.cropRect.right = rect.right
+    cropProvider.cropRect.bottom = rect.bottom
+    cropProvider.cropRect.top = rect.top
+
+    return cropTexture
+  }
+
+  private restoreStreamingCrop(): void {
+    this.applyCaptureCrop()
+    this.cameraTexture.getCameraTexture()
+  }
+
+  private async captureHighResStill(): Promise<Texture> {
+    const imageRequest = CameraModule.createImageRequest()
+    ;(imageRequest as { cameraId?: CameraModule.CameraId }).cameraId =
+      CameraModule.CameraId.Default_Color
+
+    this.appendLine("Requesting high-res still (3200x2400)…")
+    const imageFrame = await this.camModule.requestImage(imageRequest)
+    const fullTexture = imageFrame.texture
+    ValidationUtils.assertNotNull(fullTexture, "High-res still returned no texture")
+
+    this.appendLine(`Full still: ${fullTexture.getWidth()}x${fullTexture.getHeight()}`)
+    return this.applyCropToTexture(fullTexture)
+  }
+
+  private prepareBarcodeTexture(source: Texture): Texture {
+    if (!this.encodeGrayscale) {
+      return ProceduralTextureProvider.createFromTexture(source)
+    }
+
+    const width = source.getWidth()
+    const height = source.getHeight()
+    const gray = new Uint8Array(width * height)
+    TensorMath.textureToGrayscale(source, gray, new vec3(width, height, 1))
+
+    const rgba = new Uint8Array(width * height * 4)
+    for (let i = 0; i < gray.length; i++) {
+      const value = gray[i]
+      const offset = i * 4
+      rgba[offset] = value
+      rgba[offset + 1] = value
+      rgba[offset + 2] = value
+      rgba[offset + 3] = 255
+    }
+
+    const grayTexture = ProceduralTextureProvider.createWithFormat(
+      width,
+      height,
+      TextureFormat.RGBA8Unorm
+    )
+    const provider = grayTexture.control as ProceduralTextureProvider
+    provider.setPixels(0, 0, width, height, rgba)
+    return grayTexture
   }
 
   private startMobileSession(): void {
@@ -148,16 +295,29 @@ export class CameraCaptureToMobile extends BaseScriptComponent {
 
     this.isSending = true
     this.appendLine("Capturing…")
+    this.captureAndSend()
+  }
 
+  private async captureAndSend(): Promise<void> {
     try {
-      const sourceTexture = this.cameraTexture.getCameraTexture()
-      ValidationUtils.assertNotNull(sourceTexture, "Camera texture is not ready yet")
+      let sourceTexture: Texture
 
-      const stillTexture = ProceduralTextureProvider.createFromTexture(sourceTexture)
-      this.placeholderPass.baseTex = stillTexture
+      if (this.useHighResStillCapture && !this.isEditor) {
+        sourceTexture = await this.captureHighResStill()
+      } else {
+        sourceTexture = this.cameraTexture.getCameraTexture()
+        ValidationUtils.assertNotNull(sourceTexture, "Camera texture is not ready yet")
+      }
+
+      const stillTexture = this.prepareBarcodeTexture(sourceTexture)
+      this.restoreStreamingCrop()
+
+      if (this.showCapturePreviewOnGlasses && this.placeholderPass) {
+        this.placeholderPass.baseTex = stillTexture
+      }
 
       this.appendLine(
-        `Captured ${stillTexture.getWidth()}x${stillTexture.getHeight()} still frame`
+        `Captured ${stillTexture.getWidth()}x${stillTexture.getHeight()}${this.encodeGrayscale ? " grayscale" : ""} still frame`
       )
 
       this.encodeAndSend(stillTexture)
@@ -170,18 +330,22 @@ export class CameraCaptureToMobile extends BaseScriptComponent {
   private encodeAndSend(texture: Texture): void {
     const session = this.session
     const self = this
+    const quality = this.maximumJpegQuality
+      ? CompressionQuality.MaximumQuality
+      : CompressionQuality.HighQuality
 
     Base64.encodeTextureAsync(
       texture,
       (base64: string) => {
-        self.appendLine(`Encoded JPEG (${base64.length} base64 chars)`)
+        const mode = self.encodeGrayscale ? "grayscale JPEG" : "JPEG"
+        self.appendLine(`Encoded ${mode} (${base64.length} base64 chars)`)
         self.sendBase64(session, base64)
       },
       () => {
         self.appendLine("Image encode failed")
         self.isSending = false
       },
-      CompressionQuality.IntermediateQuality,
+      quality,
       EncodingType.Jpg
     )
   }
