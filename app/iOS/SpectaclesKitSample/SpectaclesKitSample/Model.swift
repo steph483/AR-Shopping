@@ -5,6 +5,7 @@ import CryptoKit
 import Foundation
 import SpectaclesKit
 import UIKit
+import Vision
 
 final class testAuthentication: Authentication {}
 
@@ -45,6 +46,10 @@ final class Model: ObservableObject {
             guard let self else { return }
             self.receivedImage = image
             self.onImageReceived?(image)
+            
+            Task {
+                    await self.processFoodImage(image)
+                }
         }
 
         getAllBonding()
@@ -157,6 +162,127 @@ final class Model: ObservableObject {
             }
         }
     }
+    
+    func detectBarcode(from image: UIImage) async throws -> String {
+
+        guard let cgImage = image.cgImage else {
+            throw NSError(
+                domain: "BarcodeDetection",
+                code: 1,
+                userInfo: [
+                    NSLocalizedDescriptionKey:
+                    "Unable to create CGImage"
+                ]
+            )
+        }
+
+        let request = VNDetectBarcodesRequest()
+
+        let handler = VNImageRequestHandler(
+            cgImage: cgImage
+        )
+
+        try handler.perform([request])
+
+        guard let observation =
+            request.results?.first,
+            let barcode =
+            observation.payloadStringValue
+        else {
+
+            throw NSError(
+                domain: "BarcodeDetection",
+                code: 2,
+                userInfo: [
+                    NSLocalizedDescriptionKey:
+                    "No barcode found"
+                ]
+            )
+        }
+
+        return barcode
+    }
+    
+    func fetchProduct(
+        barcode: String
+    ) async throws -> Product? {
+
+        let urlString =
+            "https://world.openfoodfacts.org/api/v0/product/\(barcode).json"
+
+        guard let url = URL(string: urlString) else {
+            throw URLError(.badURL)
+        }
+
+        let (data, _) =
+            try await URLSession.shared.data(from: url)
+
+        let response =
+            try JSONDecoder().decode(
+                OpenFoodFactsResponse.self,
+                from: data
+            )
+
+        return response.product
+    }
+    
+    func processFoodImage(
+        _ image: UIImage
+    ) async {
+
+        do {
+
+            let barcode =
+                try await detectBarcode(
+                    from: image
+                )
+
+            print("Detected barcode:")
+            print(barcode)
+
+            guard let product =
+                try await fetchProduct(
+                    barcode: barcode
+                )
+            else {
+                return
+            }
+
+            print("Product:")
+            print(product.product_name ?? "Unknown")
+            
+            //THE REST OF THIS FUNC SEND JSON BACK TO THE LENS
+            //build json--edit for whatever (available) data we want to send for the cards.
+            let response = FoodResponse(
+                productName: product.product_name ?? "Unknown",
+                brand: product.brands ?? "Unknown",
+                calories: product.nutriments?.energy_kcal_100g ?? 0,
+                protein: product.nutriments?.proteins_100g ?? 0,
+                carbs: product.nutriments?.carbohydrates_100g ?? 0,
+                fat: product.nutriments?.fat_100g ?? 0,
+                barcode: barcode
+            )
+
+            let jsonData = try JSONEncoder().encode(response)
+            let jsonString = String(data: jsonData, encoding: .utf8)!
+
+            await MainActor.run {
+                self.onSendMessage(message: jsonString)
+            }
+
+        } catch {
+
+            print("Food processing error:")
+            print(error)
+
+            await MainActor.run {
+                self.receivedMessage =
+                    "Food processing failed: \(error.localizedDescription)"
+            }
+        }
+    }
+    
+    
 }
 
 extension Model: SpectaclesRequestDelegate {
@@ -229,6 +355,34 @@ extension Model: SpectaclesRequestDelegate {
             }
         }
     }
+}
+
+struct OpenFoodFactsResponse: Codable {
+    let status: Int
+    let product: Product?
+}
+
+struct Product: Codable {
+    let product_name: String?
+    let brands: String?
+    let nutriments: Nutriments?
+}
+
+struct Nutriments: Codable {
+    let energy_kcal_100g: Double?
+    let proteins_100g: Double?
+    let carbohydrates_100g: Double?
+    let fat_100g: Double?
+}
+
+struct FoodResponse: Codable {
+    let productName: String
+    let brand: String
+    let calories: Double
+    let protein: Double
+    let carbs: Double
+    let fat: Double
+    let barcode: String
 }
 
 extension Data {
