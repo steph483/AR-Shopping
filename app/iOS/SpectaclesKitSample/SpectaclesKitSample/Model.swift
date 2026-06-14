@@ -25,6 +25,11 @@ final class Model: ObservableObject {
     @Published var bondings: [BondingData] = []
     @Published var statusMessage: String = "Lens name for binding: \(testLensId)"
 
+    @Published var debugScanStatus: String = "Idle"
+    @Published var debugDetectedBarcode: String = ""
+    @Published var debugApiSummary: String = ""
+    @Published var debugSentToGlasses: String = ""
+
     /// Called on the main actor whenever a complete image arrives from Spectacles.
     /// `receivedImage` is updated before this runs. Use this hook for barcode scanning or other processing.
     var onImageReceived: (@MainActor (UIImage) -> Void)?
@@ -32,15 +37,26 @@ final class Model: ObservableObject {
     let imageTransferReceiver = ImageTransferReceiver()
 
     private var connectionObserverTask: Task<Void, Never>?
+    @MainActor private var lookupInProgress = false
+    @MainActor private var cachedLookupJSON: String?
 
     init() {
         bondingManager = BuilderFactory.create().setIdentifier(ClientIdentifier(clientId: Bundle.main.bundleIdentifier!, appName: "SampleApp")!).setVersion("1.0").setAuth(testAuthentication()).build()
 
         imageTransferReceiver.onTransferStarted = { [weak self] in
-            self?.receivedImage = nil
+            Task { @MainActor in
+                guard let self else { return }
+                self.receivedImage = nil
+                self.resetLookupCache()
+                self.debugScanStatus = "Receiving image…"
+            }
         }
         imageTransferReceiver.onTransferFailed = { [weak self] in
-            self?.receivedImage = nil
+            Task { @MainActor in
+                guard let self else { return }
+                self.receivedImage = nil
+                self.cacheLookupError("Image transfer failed")
+            }
         }
         imageTransferReceiver.onImageReceived = { [weak self] image in
             guard let self else { return }
@@ -141,6 +157,70 @@ final class Model: ObservableObject {
         receivedImage = nil
         imageTransferReceiver.reset()
         connectionStatusText = ""
+        Task { @MainActor in
+            self.resetLookupCache()
+            self.debugScanStatus = "Idle"
+            self.debugDetectedBarcode = ""
+            self.debugApiSummary = ""
+            self.debugSentToGlasses = ""
+        }
+    }
+
+    @MainActor
+    private func resetLookupCache() {
+        lookupInProgress = false
+        cachedLookupJSON = nil
+    }
+
+    @MainActor
+    private func cacheLookupError(_ message: String) {
+        lookupInProgress = false
+        cachedLookupJSON = encodeLookupResponse(FoodLookupResponse.error(message))
+        debugScanStatus = "Error"
+        debugSentToGlasses = cachedLookupJSON ?? ""
+    }
+
+    @MainActor
+    private func cacheLookupSuccess(_ response: FoodLookupResponse) {
+        lookupInProgress = false
+        cachedLookupJSON = encodeLookupResponse(response)
+        debugScanStatus = "Ready for glasses"
+        debugSentToGlasses = cachedLookupJSON ?? ""
+    }
+
+    private func encodeLookupResponse(_ response: FoodLookupResponse) -> String? {
+        guard let data = try? JSONEncoder().encode(response) else {
+            return nil
+        }
+        return String(data: data, encoding: .utf8)
+    }
+
+    private func isFoodLookupRequest(_ body: String) -> Bool {
+        guard let data = body.data(using: .utf8),
+              let message = try? JSONDecoder().decode(FoodLookupRequest.self, from: data)
+        else {
+            return body.contains("\"op\":\"food_lookup\"")
+        }
+        return message.op == "food_lookup"
+    }
+
+    private func getFoodLookupResponse() async -> String {
+        let timeoutSeconds = 30.0
+        let start = Date()
+
+        while await MainActor.run(body: { self.lookupInProgress }) {
+            if Date().timeIntervalSince(start) > timeoutSeconds {
+                return await MainActor.run {
+                    self.cacheLookupError("Lookup timed out")
+                    return self.cachedLookupJSON ?? encodeLookupResponse(FoodLookupResponse.error("Lookup timed out"))!
+                }
+            }
+            try? await Task.sleep(nanoseconds: 100_000_000)
+        }
+
+        return await MainActor.run {
+            self.cachedLookupJSON ?? encodeLookupResponse(FoodLookupResponse.error("No scan result available"))!
+        }
     }
 
     private func observeConnectionStatus(_ session: any SpectaclesSession) {
@@ -205,7 +285,7 @@ final class Model: ObservableObject {
     
     func fetchProduct(
         barcode: String
-    ) async throws -> Product? {
+    ) async throws -> (product: Product, rawSummary: String) {
 
         let urlString =
             "https://world.openfoodfacts.org/api/v0/product/\(barcode).json"
@@ -217,18 +297,39 @@ final class Model: ObservableObject {
         let (data, _) =
             try await URLSession.shared.data(from: url)
 
+        let rawSummary = String(data: data, encoding: .utf8) ?? ""
+
         let response =
             try JSONDecoder().decode(
                 OpenFoodFactsResponse.self,
                 from: data
             )
 
-        return response.product
+        guard response.status == 1, let product = response.product else {
+            throw NSError(
+                domain: "OpenFoodFacts",
+                code: 404,
+                userInfo: [
+                    NSLocalizedDescriptionKey: "Product not found in Open Food Facts"
+                ]
+            )
+        }
+
+        return (product, rawSummary)
     }
-    
+
     func processFoodImage(
         _ image: UIImage
     ) async {
+
+        await MainActor.run {
+            self.lookupInProgress = true
+            self.cachedLookupJSON = nil
+            self.debugScanStatus = "Scanning barcode…"
+            self.debugDetectedBarcode = ""
+            self.debugApiSummary = ""
+            self.debugSentToGlasses = ""
+        }
 
         do {
 
@@ -240,20 +341,21 @@ final class Model: ObservableObject {
             print("Detected barcode:")
             print(barcode)
 
-            guard let product =
+            await MainActor.run {
+                self.debugDetectedBarcode = barcode
+                self.debugScanStatus = "Fetching from Open Food Facts…"
+            }
+
+            let fetchResult =
                 try await fetchProduct(
                     barcode: barcode
                 )
-            else {
-                return
-            }
+            let product = fetchResult.product
 
             print("Product:")
             print(product.product_name ?? "Unknown")
-            
-            //THE REST OF THIS FUNC SEND JSON BACK TO THE LENS
-            //build json--edit for whatever (available) data we want to send for the cards.
-            let response = FoodResponse(
+
+            let lookupResponse = FoodLookupResponse.success(
                 productName: product.product_name ?? "Unknown",
                 brand: product.brands ?? "Unknown",
                 calories: product.nutriments?.energy_kcal_100g ?? 0,
@@ -263,11 +365,10 @@ final class Model: ObservableObject {
                 barcode: barcode
             )
 
-            let jsonData = try JSONEncoder().encode(response)
-            let jsonString = String(data: jsonData, encoding: .utf8)!
-
             await MainActor.run {
-                self.onSendMessage(message: jsonString)
+                self.debugApiSummary = self.formatApiSummary(product: product, rawSummary: fetchResult.rawSummary)
+                self.cacheLookupSuccess(lookupResponse)
+                self.receivedMessage = "Food lookup ready for glasses"
             }
 
         } catch {
@@ -276,10 +377,28 @@ final class Model: ObservableObject {
             print(error)
 
             await MainActor.run {
+                self.cacheLookupError(error.localizedDescription)
                 self.receivedMessage =
                     "Food processing failed: \(error.localizedDescription)"
             }
         }
+    }
+
+    @MainActor
+    private func formatApiSummary(product: Product, rawSummary: String) -> String {
+        var lines: [String] = []
+        lines.append("product_name: \(product.product_name ?? "—")")
+        lines.append("brands: \(product.brands ?? "—")")
+        if let nutriments = product.nutriments {
+            lines.append("energy_kcal_100g: \(nutriments.energy_kcal_100g.map(String.init) ?? "—")")
+            lines.append("proteins_100g: \(nutriments.proteins_100g.map(String.init) ?? "—")")
+            lines.append("carbohydrates_100g: \(nutriments.carbohydrates_100g.map(String.init) ?? "—")")
+            lines.append("fat_100g: \(nutriments.fat_100g.map(String.init) ?? "—")")
+        }
+        lines.append("")
+        lines.append("Raw response (truncated):")
+        lines.append(String(rawSummary.prefix(1200)))
+        return lines.joined(separator: "\n")
     }
     
     
@@ -297,6 +416,13 @@ extension Model: SpectaclesRequestDelegate {
                         self.onReceiveMessage(message: message)
                     }
                     callRequest.yield("ok".data(using: .utf8)!, isComplete: true)
+                } else if isFoodLookupRequest(body) {
+                    let responseJSON = await getFoodLookupResponse()
+                    await MainActor.run {
+                        self.debugSentToGlasses = responseJSON
+                        self.onReceiveMessage(message: "Sent food lookup to glasses")
+                    }
+                    callRequest.yield(responseJSON.data(using: .utf8)!, isComplete: true)
                 } else if body.contains("\"op\":\"img_") {
                     await MainActor.run {
                         self.onReceiveMessage(message: "Image transfer message could not be parsed")
@@ -375,14 +501,56 @@ struct Nutriments: Codable {
     let fat_100g: Double?
 }
 
-struct FoodResponse: Codable {
-    let productName: String
-    let brand: String
-    let calories: Double
-    let protein: Double
-    let carbs: Double
-    let fat: Double
-    let barcode: String
+struct FoodLookupRequest: Codable {
+    let op: String
+}
+
+struct FoodLookupResponse: Codable {
+    let status: String
+    let message: String?
+    let productName: String?
+    let brand: String?
+    let calories: Double?
+    let protein: Double?
+    let carbs: Double?
+    let fat: Double?
+    let barcode: String?
+
+    static func success(
+        productName: String,
+        brand: String,
+        calories: Double,
+        protein: Double,
+        carbs: Double,
+        fat: Double,
+        barcode: String
+    ) -> FoodLookupResponse {
+        FoodLookupResponse(
+            status: "ok",
+            message: nil,
+            productName: productName,
+            brand: brand,
+            calories: calories,
+            protein: protein,
+            carbs: carbs,
+            fat: fat,
+            barcode: barcode
+        )
+    }
+
+    static func error(_ message: String) -> FoodLookupResponse {
+        FoodLookupResponse(
+            status: "error",
+            message: message,
+            productName: nil,
+            brand: nil,
+            calories: nil,
+            protein: nil,
+            carbs: nil,
+            fat: nil,
+            barcode: nil
+        )
+    }
 }
 
 extension Data {

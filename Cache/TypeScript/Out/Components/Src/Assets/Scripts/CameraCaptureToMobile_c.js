@@ -21,6 +21,7 @@ function checkUndefined(property, showIfData) {
 // @input Component.Image placeholderImage {"hint":"Placeholder Image used only when showCapturePreviewOnGlasses is enabled"}
 // @input AssignableType_1 captureButton {"hint":"RoundButton that triggers capture on release (trigger up)"}
 // @input Component.Text logText {"hint":"Text component used to display connection and transfer logs on screen"}
+// @input Component.Text resultPanelText {"hint":"Blank panel text for food lookup results (debug). Wire a Text on your result panel."}
 // @ui {"widget":"separator"}
 // @ui {"widget":"label", "label":"<span style=\"color: #60A5FA;\">Scan View</span>"}
 // @input bool showCapturePreviewOnGlasses {"hint":"Show the captured still on glasses after each scan. Off sends to phone only."}
@@ -57,6 +58,7 @@ awakeEvent.bind(() => {
     checkUndefined("placeholderImage", []);
     checkUndefined("captureButton", []);
     checkUndefined("logText", []);
+    checkUndefined("resultPanelText", []);
     checkUndefined("showCapturePreviewOnGlasses", []);
     checkUndefined("cropHalfSize", []);
     checkUndefined("cropHorizontalOffset", []);

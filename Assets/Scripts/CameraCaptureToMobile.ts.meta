@@ -37,6 +37,7 @@
     logText: false
     maximumJpegQuality: false
     placeholderImage: false
+    resultPanelText: false
     reticleObject: false
     showCapturePreviewOnGlasses: false
     useHighResStillCapture: false
@@ -55,6 +56,7 @@
       placeholderImage: !<reference.Image> 00000000-0000-0000-0000-000000000000
       captureButton: !<MappingBased.AssignableType_1> 00000000-0000-0000-0000-000000000000
       logText: !<reference.Text> 00000000-0000-0000-0000-000000000000
+      resultPanelText: !<reference.Text> 00000000-0000-0000-0000-000000000000
       showCapturePreviewOnGlasses: false
       cropHalfSize: 0.400000
       cropHorizontalOffset: 0.080000
@@ -76,6 +78,7 @@
     - '// @input Component.Image placeholderImage {"hint":"Placeholder Image used only when showCapturePreviewOnGlasses is enabled"}'
     - '// @input AssignableType_1 captureButton {"hint":"RoundButton that triggers capture on release (trigger up)"}'
     - '// @input Component.Text logText {"hint":"Text component used to display connection and transfer logs on screen"}'
+    - '// @input Component.Text resultPanelText {"hint":"Blank panel text for food lookup results (debug). Wire a Text on your result panel."}'
     - '// @ui {"widget":"separator"}'
     - '// @ui {"widget":"label", "label":"<span style=\"color: #60A5FA;\">Scan View</span>"}'
     - '// @input bool showCapturePreviewOnGlasses {"hint":"Show the captured still on glasses after each scan. Off sends to phone only."}'

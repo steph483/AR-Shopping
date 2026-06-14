@@ -87,6 +87,35 @@ struct SessionView: View {
                     .overlay(RoundedRectangle(cornerRadius: 10).stroke(Color.gray.opacity(0.5)))
                     .disabled(true)
                     .padding(.bottom, 16)
+
+                Text("Food Scan Debug")
+                    .font(.headline)
+                    .padding(.top, 8)
+
+                debugRow(label: "Status", value: model.debugScanStatus)
+                debugRow(label: "Barcode", value: model.debugDetectedBarcode.isEmpty ? "—" : model.debugDetectedBarcode)
+
+                Text("API summary:")
+                    .font(.subheadline)
+                    .padding(.top, 8)
+                TextEditor(text: .constant(model.debugApiSummary.isEmpty ? "—" : model.debugApiSummary))
+                    .frame(minHeight: 140)
+                    .padding(8)
+                    .background(Color(.systemGray6))
+                    .cornerRadius(10)
+                    .disabled(true)
+                    .padding(.bottom, 8)
+
+                Text("JSON sent to glasses:")
+                    .font(.subheadline)
+                TextEditor(text: .constant(model.debugSentToGlasses.isEmpty ? "—" : model.debugSentToGlasses))
+                    .frame(minHeight: 120)
+                    .padding(8)
+                    .background(Color(.systemGray6))
+                    .cornerRadius(10)
+                    .disabled(true)
+                    .padding(.bottom, 16)
+
                 Spacer()
             }
             .padding(.top, 20)
@@ -96,5 +125,17 @@ struct SessionView: View {
 
     private func hideKeyboard() {
         UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+    }
+
+    private func debugRow(label: String, value: String) -> some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Text(label)
+                .font(.subheadline)
+                .foregroundStyle(.secondary)
+            Text(value)
+                .font(.body)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.bottom, 8)
     }
 }

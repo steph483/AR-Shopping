@@ -1,7 +1,7 @@
 CollapsedEntities:
   type: stringset
   value:
-    size: 801
+    size: 803
     values:
       - CropCameraTexture.lspkg
       - CropCameraTexture.lspkg/CropCameraTextureTS__PLACE_IN_SCENE.prefab
@@ -27,8 +27,10 @@ CollapsedEntities:
       - Prefabs
       - Render
       - Scene.scene
+      - Scripts
       - Scripts/CameraCaptureToMobile.ts
       - Scripts/CameraCaptureToPlaceholder.ts
+      - Scripts/FoodDataStore.ts
       - Shaders
       - SnapDecorators 3.lspkg
       - SnapDecorators 3.lspkg/Examples.ts
@@ -41,6 +43,7 @@ CollapsedEntities:
       - SnapDecorators 3.lspkg/package.native
       - SnapDecorators.lspkg
       - SnapDecorators.lspkg/package.native
+      - SpectaclesInteractionKit.lspkg
       - SpectaclesInteractionKit.lspkg/Assets
       - SpectaclesInteractionKit.lspkg/Assets/Audio
       - SpectaclesInteractionKit.lspkg/Assets/Audio/HoverAudioTrack.wav
@@ -678,7 +681,6 @@ CollapsedEntities:
       - SpectaclesUIKit.lspkg/Meshes/DefaultSphere.mesh
       - SpectaclesUIKit.lspkg/Meshes/StretchableCircle.mesh
       - SpectaclesUIKit.lspkg/Meshes/Unit Plane.mesh
-      - SpectaclesUIKit.lspkg/Prefabs
       - SpectaclesUIKit.lspkg/Prefabs/DropShadow.prefab
       - SpectaclesUIKit.lspkg/Prefabs/ExampleInterface.prefab
       - SpectaclesUIKit.lspkg/Prefabs/FrameButton.prefab
@@ -687,6 +689,7 @@ CollapsedEntities:
       - SpectaclesUIKit.lspkg/Prefabs/LabelledToggle.prefab
       - SpectaclesUIKit.lspkg/README.md
       - SpectaclesUIKit.lspkg/Scripts/BackPlate.ts
+      - SpectaclesUIKit.lspkg/Scripts/Components/Button
       - SpectaclesUIKit.lspkg/Scripts/Components/Button/BaseButton.ts
       - SpectaclesUIKit.lspkg/Scripts/Components/Button/CapsuleButton.ts
       - SpectaclesUIKit.lspkg/Scripts/Components/Button/Checkbox.ts
@@ -694,7 +697,6 @@ CollapsedEntities:
       - SpectaclesUIKit.lspkg/Scripts/Components/Button/RectangleButton.ts
       - SpectaclesUIKit.lspkg/Scripts/Components/Button/RoundButton.ts
       - SpectaclesUIKit.lspkg/Scripts/Components/Element.ts
-      - SpectaclesUIKit.lspkg/Scripts/Components/Frame
       - SpectaclesUIKit.lspkg/Scripts/Components/Frame/Frame.ts
       - SpectaclesUIKit.lspkg/Scripts/Components/Frame/modules
       - SpectaclesUIKit.lspkg/Scripts/Components/Frame/modules/ButtonHandler.ts

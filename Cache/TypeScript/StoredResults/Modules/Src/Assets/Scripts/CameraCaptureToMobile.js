@@ -51,6 +51,7 @@ function component(target) {
     });
 }
 const decorators_1 = require("SnapDecorators.lspkg/decorators");
+const FoodDataStore_1 = require("./FoodDataStore");
 const Logger_1 = require("Utilities.lspkg/Scripts/Utils/Logger");
 const ValidationUtils_1 = require("Utilities.lspkg/Scripts/Utils/ValidationUtils");
 let CameraCaptureToMobile = (() => {
@@ -70,6 +71,7 @@ let CameraCaptureToMobile = (() => {
             this.placeholderImage = this.placeholderImage;
             this.captureButton = this.captureButton;
             this.logText = this.logText;
+            this.resultPanelText = this.resultPanelText;
             this.showCapturePreviewOnGlasses = this.showCapturePreviewOnGlasses;
             this.cropHalfSize = this.cropHalfSize;
             this.cropHorizontalOffset = this.cropHorizontalOffset;
@@ -94,6 +96,7 @@ let CameraCaptureToMobile = (() => {
             this.placeholderImage = this.placeholderImage;
             this.captureButton = this.captureButton;
             this.logText = this.logText;
+            this.resultPanelText = this.resultPanelText;
             this.showCapturePreviewOnGlasses = this.showCapturePreviewOnGlasses;
             this.cropHalfSize = this.cropHalfSize;
             this.cropHorizontalOffset = this.cropHorizontalOffset;
@@ -133,6 +136,9 @@ let CameraCaptureToMobile = (() => {
             ValidationUtils_1.ValidationUtils.assertNotNull(this.logText, "Assign the log Text (e.g. Test Log under Camera)");
             if (this.logText) {
                 this.logText.text = "Camera Capture → Mobile:";
+            }
+            if (this.resultPanelText) {
+                this.resultPanelText.text = "";
             }
             this.setupScanView();
             this.applyCaptureCrop();
@@ -278,6 +284,8 @@ let CameraCaptureToMobile = (() => {
                 return;
             }
             this.isSending = true;
+            FoodDataStore_1.FoodDataStore.reset();
+            this.setResultPanelText("");
             this.appendLine("Capturing…");
             this.captureAndSend();
         }
@@ -350,7 +358,7 @@ let CameraCaptureToMobile = (() => {
             if (index >= chunks.length) {
                 session.sendData(JSON.stringify({ op: "img_end", id: transferId }));
                 this.appendLine("Sent img_end — transfer complete");
-                this.isSending = false;
+                this.requestFoodLookup(session);
                 return;
             }
             const chunkMsg = JSON.stringify({
@@ -369,6 +377,33 @@ let CameraCaptureToMobile = (() => {
                 self.appendLine("Chunk failed: " + error);
                 self.isSending = false;
             });
+        }
+        requestFoodLookup(session) {
+            const self = this;
+            FoodDataStore_1.FoodDataStore.setLoading();
+            this.setResultPanelText("Looking up...");
+            this.appendLine("Requesting food lookup from mobile app…");
+            const lookupMsg = JSON.stringify({ op: "food_lookup" });
+            session
+                .sendRequest(lookupMsg)
+                .then((response) => {
+                self.appendLine("Food lookup response received");
+                FoodDataStore_1.FoodDataStore.applyFromJson(response);
+                self.setResultPanelText(FoodDataStore_1.FoodDataStore.formatDisplayText());
+                self.isSending = false;
+            })
+                .catch((error) => {
+                FoodDataStore_1.FoodDataStore.status = "error";
+                FoodDataStore_1.FoodDataStore.message = "Food lookup failed: " + error;
+                self.setResultPanelText(FoodDataStore_1.FoodDataStore.message);
+                self.appendLine(FoodDataStore_1.FoodDataStore.message);
+                self.isSending = false;
+            });
+        }
+        setResultPanelText(text) {
+            if (this.resultPanelText) {
+                this.resultPanelText.text = text;
+            }
         }
         appendLine(txt) {
             print(txt);

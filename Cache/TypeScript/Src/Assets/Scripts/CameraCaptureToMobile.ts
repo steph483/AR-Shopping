@@ -5,6 +5,7 @@
 import { CameraTexture } from "CropCameraTexture.lspkg/Scripts/CameraTexture"
 import { bindStartEvent } from "SnapDecorators.lspkg/decorators"
 import { RoundButton } from "SpectaclesUIKit.lspkg/Scripts/Components/Button/RoundButton"
+import { FoodDataStore } from "./FoodDataStore"
 import { Logger } from "Utilities.lspkg/Scripts/Utils/Logger"
 import { ValidationUtils } from "Utilities.lspkg/Scripts/Utils/ValidationUtils"
 
@@ -37,6 +38,10 @@ export class CameraCaptureToMobile extends BaseScriptComponent {
   @input
   @hint("Text component used to display connection and transfer logs on screen")
   logText: Text
+
+  @input
+  @hint("Blank panel text for food lookup results (debug). Wire a Text on your result panel.")
+  resultPanelText: Text
 
   @ui.separator
   @ui.label('<span style="color: #60A5FA;">Scan View</span>')
@@ -119,6 +124,10 @@ export class CameraCaptureToMobile extends BaseScriptComponent {
 
     if (this.logText) {
       this.logText.text = "Camera Capture → Mobile:"
+    }
+
+    if (this.resultPanelText) {
+      this.resultPanelText.text = ""
     }
 
     this.setupScanView()
@@ -294,6 +303,8 @@ export class CameraCaptureToMobile extends BaseScriptComponent {
     }
 
     this.isSending = true
+    FoodDataStore.reset()
+    this.setResultPanelText("")
     this.appendLine("Capturing…")
     this.captureAndSend()
   }
@@ -384,7 +395,7 @@ export class CameraCaptureToMobile extends BaseScriptComponent {
     if (index >= chunks.length) {
       session.sendData(JSON.stringify({ op: "img_end", id: transferId }))
       this.appendLine("Sent img_end — transfer complete")
-      this.isSending = false
+      this.requestFoodLookup(session)
       return
     }
 
@@ -405,6 +416,37 @@ export class CameraCaptureToMobile extends BaseScriptComponent {
         self.appendLine("Chunk failed: " + error)
         self.isSending = false
       })
+  }
+
+  private requestFoodLookup(session: any): void {
+    const self = this
+    FoodDataStore.setLoading()
+    this.setResultPanelText("Looking up...")
+    this.appendLine("Requesting food lookup from mobile app…")
+
+    const lookupMsg = JSON.stringify({ op: "food_lookup" })
+
+    session
+      .sendRequest(lookupMsg)
+      .then((response: string) => {
+        self.appendLine("Food lookup response received")
+        FoodDataStore.applyFromJson(response)
+        self.setResultPanelText(FoodDataStore.formatDisplayText())
+        self.isSending = false
+      })
+      .catch((error: string) => {
+        FoodDataStore.status = "error"
+        FoodDataStore.message = "Food lookup failed: " + error
+        self.setResultPanelText(FoodDataStore.message)
+        self.appendLine(FoodDataStore.message)
+        self.isSending = false
+      })
+  }
+
+  private setResultPanelText(text: string): void {
+    if (this.resultPanelText) {
+      this.resultPanelText.text = text
+    }
   }
 
   private appendLine(txt: string): void {
