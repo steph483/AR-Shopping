@@ -27,6 +27,7 @@ final class Model: ObservableObject {
 
     @Published var debugScanStatus: String = "Idle"
     @Published var debugDetectedBarcode: String = ""
+    @Published var debugBarcodeScanDetail: String = ""
     @Published var debugApiSummary: String = ""
     @Published var debugSentToGlasses: String = ""
 
@@ -161,6 +162,7 @@ final class Model: ObservableObject {
             self.resetLookupCache()
             self.debugScanStatus = "Idle"
             self.debugDetectedBarcode = ""
+            self.debugBarcodeScanDetail = ""
             self.debugApiSummary = ""
             self.debugSentToGlasses = ""
         }
@@ -243,44 +245,134 @@ final class Model: ObservableObject {
         }
     }
     
-    func detectBarcode(from image: UIImage) async throws -> String {
+    private struct BarcodeScanResult {
+        let value: String
+        let detail: String
+    }
 
+    func detectBarcode(from image: UIImage) async throws -> String {
+        let result = try await detectBarcodeWithDetail(from: image)
+        await MainActor.run {
+            self.debugBarcodeScanDetail = result.detail
+        }
+        return result.value
+    }
+
+    private func detectBarcodeWithDetail(from image: UIImage) async throws -> BarcodeScanResult {
         guard let cgImage = image.cgImage else {
             throw NSError(
                 domain: "BarcodeDetection",
                 code: 1,
                 userInfo: [
-                    NSLocalizedDescriptionKey:
-                    "Unable to create CGImage"
+                    NSLocalizedDescriptionKey: "Unable to create CGImage"
                 ]
             )
         }
 
-        let request = VNDetectBarcodesRequest()
+        let orientation = cgImageOrientation(from: image.imageOrientation)
+        let imageSize = "\(cgImage.width)x\(cgImage.height)"
+        let orientationLabel = orientationDebugLabel(orientation, uiOrientation: image.imageOrientation)
 
+        let request = makeBarcodeRequest()
         let handler = VNImageRequestHandler(
-            cgImage: cgImage
+            cgImage: cgImage,
+            orientation: orientation,
+            options: [:]
         )
 
         try handler.perform([request])
 
-        guard let observation =
-            request.results?.first,
-            let barcode =
-            observation.payloadStringValue
-        else {
-
-            throw NSError(
-                domain: "BarcodeDetection",
-                code: 2,
-                userInfo: [
-                    NSLocalizedDescriptionKey:
-                    "No barcode found"
-                ]
-            )
+        let resultCount = request.results?.count ?? 0
+        if let barcode = bestBarcode(from: request.results) {
+            let detail = [
+                "pass: full frame",
+                "mode: accurate (Vision revision \(barcodeRequestRevisionLabel()))",
+                "orientation: \(orientationLabel)",
+                "size: \(imageSize)",
+                "visionResults: \(resultCount)"
+            ].joined(separator: "\n")
+            return BarcodeScanResult(value: barcode, detail: detail)
         }
 
-        return barcode
+        let detail = [
+            "pass: full frame",
+            "mode: accurate (Vision revision \(barcodeRequestRevisionLabel()))",
+            "orientation: \(orientationLabel)",
+            "size: \(imageSize)",
+            "visionResults: \(resultCount)"
+        ].joined(separator: "\n")
+
+        throw NSError(
+            domain: "BarcodeDetection",
+            code: 2,
+            userInfo: [
+                NSLocalizedDescriptionKey: "No barcode found",
+                "BarcodeScanDetail": detail
+            ]
+        )
+    }
+
+    private func makeBarcodeRequest() -> VNDetectBarcodesRequest {
+        let request = VNDetectBarcodesRequest()
+        request.symbologies = [.ean13, .ean8, .upce, .code128, .code39, .qr]
+
+        if #available(iOS 17.0, *) {
+            request.revision = VNDetectBarcodesRequestRevision3
+        } else if #available(iOS 16.0, *) {
+            request.revision = VNDetectBarcodesRequestRevision2
+        }
+
+        return request
+    }
+
+    private func barcodeRequestRevisionLabel() -> String {
+        if #available(iOS 17.0, *) {
+            return "3"
+        }
+        if #available(iOS 16.0, *) {
+            return "2"
+        }
+        return "1"
+    }
+
+    private func bestBarcode(from results: [VNBarcodeObservation]?) -> String? {
+        guard let results, !results.isEmpty else {
+            return nil
+        }
+
+        return results
+            .compactMap(\.payloadStringValue)
+            .max(by: { $0.count < $1.count })
+    }
+
+    private func cgImageOrientation(from orientation: UIImage.Orientation) -> CGImagePropertyOrientation {
+        switch orientation {
+        case .up:
+            return .up
+        case .down:
+            return .down
+        case .left:
+            return .left
+        case .right:
+            return .right
+        case .upMirrored:
+            return .upMirrored
+        case .downMirrored:
+            return .downMirrored
+        case .leftMirrored:
+            return .leftMirrored
+        case .rightMirrored:
+            return .rightMirrored
+        @unknown default:
+            return .up
+        }
+    }
+
+    private func orientationDebugLabel(
+        _ orientation: CGImagePropertyOrientation,
+        uiOrientation: UIImage.Orientation
+    ) -> String {
+        "ui=\(uiOrientation.rawValue), vision=\(orientation.rawValue)"
     }
     
     func fetchProduct(
@@ -327,16 +419,13 @@ final class Model: ObservableObject {
             self.cachedLookupJSON = nil
             self.debugScanStatus = "Scanning barcode…"
             self.debugDetectedBarcode = ""
+            self.debugBarcodeScanDetail = ""
             self.debugApiSummary = ""
             self.debugSentToGlasses = ""
         }
 
         do {
-
-            let barcode =
-                try await detectBarcode(
-                    from: image
-                )
+            let barcode = try await detectBarcode(from: image)
 
             print("Detected barcode:")
             print(barcode)
@@ -378,6 +467,13 @@ final class Model: ObservableObject {
 
             await MainActor.run {
                 self.cacheLookupError(error.localizedDescription)
+                if self.debugBarcodeScanDetail.isEmpty,
+                   let detail = (error as NSError).userInfo["BarcodeScanDetail"] as? String
+                {
+                    self.debugBarcodeScanDetail = detail
+                } else if self.debugBarcodeScanDetail.isEmpty {
+                    self.debugBarcodeScanDetail = error.localizedDescription
+                }
                 self.receivedMessage =
                     "Food processing failed: \(error.localizedDescription)"
             }

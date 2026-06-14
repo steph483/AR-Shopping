@@ -11,7 +11,7 @@ import { ValidationUtils } from "Utilities.lspkg/Scripts/Utils/ValidationUtils"
 
 @component
 export class CameraCaptureToMobile extends BaseScriptComponent {
-  @ui.label('<span style="color: #60A5FA;">Camera Capture to Mobile</span><br/><span style="color: #94A3B8; font-size: 11px;">Press the RoundButton to capture a cropped camera frame and send it to the bonded mobile app over BLE.</span>')
+  @ui.label('<span style="color: #60A5FA;">Camera Capture to Mobile</span><br/><span style="color: #94A3B8; font-size: 11px;">Press the RoundButton to capture a camera frame and send it to the bonded mobile app over BLE.</span>')
   @ui.separator
 
   @ui.label('<span style="color: #60A5FA;">Scene References</span>')
@@ -20,7 +20,7 @@ export class CameraCaptureToMobile extends BaseScriptComponent {
   cameraTexture: CameraTexture
 
   @input
-  @hint("SceneObject that displays the live camera feed (e.g. CaptureCropped). Hidden at runtime.")
+  @hint("SceneObject that displays the live camera feed (e.g. CaptureCropped). Shown while aiming; hidden after capture until RoundButton is pressed again.")
   liveFeedObject: SceneObject
 
   @input
@@ -49,18 +49,24 @@ export class CameraCaptureToMobile extends BaseScriptComponent {
   @hint("Show the captured still on glasses after each scan. Off sends to phone only.")
   showCapturePreviewOnGlasses: boolean = false
 
+  @ui.separator
+  @ui.label('<span style="color: #60A5FA;">Capture Region</span>')
   @input
-  @hint("Half-size of the square crop region in normalized coords. Smaller = more zoom (0.22 ≈ 44% of frame).")
+  @hint("Send the full camera frame. Off uses the crop region below for live feed and capture.")
+  useFullFrameCapture: boolean = true
+
+  @input
+  @hint("Half-size of the square crop region in normalized coords. Smaller = more zoom (0.22 ≈ 44% of frame). Ignored when useFullFrameCapture is on.")
   cropHalfSize: number = 0.22
 
   @input
-  @hint("Shift capture region horizontally to match reticle. Positive moves capture right (fixes subject appearing too far right).")
+  @hint("Shift capture region horizontally to match reticle. Ignored when useFullFrameCapture is on.")
   cropHorizontalOffset: number = 0.08
 
   @ui.separator
   @ui.label('<span style="color: #60A5FA;">Capture Quality</span>')
   @input
-  @hint("Use CameraModule.requestImage for a 3200x2400 still, then crop. Much sharper than the live stream.")
+  @hint("Use CameraModule.requestImage for a 3200x2400 still. Much sharper than the live stream.")
   useHighResStillCapture: boolean = true
 
   @ui.separator
@@ -89,6 +95,7 @@ export class CameraCaptureToMobile extends BaseScriptComponent {
   private placeholderPass: Pass | null = null
   private session: any = null
   private isSending = false
+  private isAiming = true
   private isEditor = global.deviceInfoSystem.isEditor()
   private chunkSize = 2048
 
@@ -152,18 +159,27 @@ export class CameraCaptureToMobile extends BaseScriptComponent {
   }
 
   private setupScanView(): void {
-    if (this.liveFeedObject) {
-      this.liveFeedObject.enabled = false
-    }
-    if (this.reticleObject) {
-      this.reticleObject.enabled = true
-    }
+    this.setAimingMode(true)
     if (!this.showCapturePreviewOnGlasses && this.placeholderImage) {
       this.placeholderImage.getSceneObject().enabled = false
     }
   }
 
+  private setAimingMode(aiming: boolean): void {
+    this.isAiming = aiming
+    if (this.liveFeedObject) {
+      this.liveFeedObject.enabled = aiming
+    }
+    if (this.reticleObject) {
+      this.reticleObject.enabled = aiming
+    }
+  }
+
   private getCropRect(): { left: number; right: number; bottom: number; top: number } {
+    if (this.useFullFrameCapture) {
+      return { left: -1, right: 1, bottom: -1, top: 1 }
+    }
+
     const half = this.cropHalfSize
     const shiftX = this.cropHorizontalOffset
     return {
@@ -219,6 +235,9 @@ export class CameraCaptureToMobile extends BaseScriptComponent {
     ValidationUtils.assertNotNull(fullTexture, "High-res still returned no texture")
 
     this.appendLine(`Full still: ${fullTexture.getWidth()}x${fullTexture.getHeight()}`)
+    if (this.useFullFrameCapture) {
+      return fullTexture
+    }
     return this.applyCropToTexture(fullTexture)
   }
 
@@ -297,14 +316,21 @@ export class CameraCaptureToMobile extends BaseScriptComponent {
       return
     }
 
+    if (!this.isAiming) {
+      FoodDataStore.reset()
+      this.setResultPanelText("")
+      this.setAimingMode(true)
+      this.appendLine("Live feed restored — aim at barcode and press again to capture")
+      return
+    }
+
     if (!this.session || !this.session.isConnected) {
       this.appendLine("Not connected to mobile app")
       return
     }
 
+    this.setAimingMode(false)
     this.isSending = true
-    FoodDataStore.reset()
-    this.setResultPanelText("")
     this.appendLine("Capturing…")
     this.captureAndSend()
   }
@@ -316,7 +342,9 @@ export class CameraCaptureToMobile extends BaseScriptComponent {
       if (this.useHighResStillCapture && !this.isEditor) {
         sourceTexture = await this.captureHighResStill()
       } else {
-        sourceTexture = this.cameraTexture.getCameraTexture()
+        sourceTexture = this.useFullFrameCapture
+          ? this.cameraTexture.getOriginalCameraTexture()
+          : this.cameraTexture.getCameraTexture()
         ValidationUtils.assertNotNull(sourceTexture, "Camera texture is not ready yet")
       }
 
@@ -328,13 +356,14 @@ export class CameraCaptureToMobile extends BaseScriptComponent {
       }
 
       this.appendLine(
-        `Captured ${stillTexture.getWidth()}x${stillTexture.getHeight()}${this.encodeGrayscale ? " grayscale" : ""} still frame`
+        `Captured ${stillTexture.getWidth()}x${stillTexture.getHeight()}${this.useFullFrameCapture ? " full frame" : " cropped"}${this.encodeGrayscale ? " grayscale" : ""} still frame`
       )
 
       this.encodeAndSend(stillTexture)
     } catch (error) {
       this.appendLine("Capture failed: " + error)
       this.isSending = false
+      this.setAimingMode(true)
     }
   }
 
@@ -355,6 +384,7 @@ export class CameraCaptureToMobile extends BaseScriptComponent {
       () => {
         self.appendLine("Image encode failed")
         self.isSending = false
+        self.setAimingMode(true)
       },
       quality,
       EncodingType.Jpg
@@ -387,6 +417,7 @@ export class CameraCaptureToMobile extends BaseScriptComponent {
       .catch((error: string) => {
         self.appendLine("img_start failed: " + error)
         self.isSending = false
+        self.setAimingMode(true)
       })
   }
 
@@ -415,6 +446,7 @@ export class CameraCaptureToMobile extends BaseScriptComponent {
       .catch((error: string) => {
         self.appendLine("Chunk failed: " + error)
         self.isSending = false
+        self.setAimingMode(true)
       })
   }
 

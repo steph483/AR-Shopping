@@ -40,6 +40,7 @@
     resultPanelText: false
     reticleObject: false
     showCapturePreviewOnGlasses: false
+    useFullFrameCapture: false
     useHighResStillCapture: false
   ScriptTypesHidden:
     {}
@@ -58,6 +59,7 @@
       logText: !<reference.Text> 00000000-0000-0000-0000-000000000000
       resultPanelText: !<reference.Text> 00000000-0000-0000-0000-000000000000
       showCapturePreviewOnGlasses: false
+      useFullFrameCapture: true
       cropHalfSize: 0.400000
       cropHorizontalOffset: 0.080000
       useHighResStillCapture: true
@@ -69,11 +71,11 @@
     -
       {}
   InputLines:
-    - '// @ui {"widget":"label", "label":"<span style=\"color: #60A5FA;\">Camera Capture to Mobile</span><br/><span style=\"color: #94A3B8; font-size: 11px;\">Press the RoundButton to capture a cropped camera frame and send it to the bonded mobile app over BLE.</span>"}'
+    - '// @ui {"widget":"label", "label":"<span style=\"color: #60A5FA;\">Camera Capture to Mobile</span><br/><span style=\"color: #94A3B8; font-size: 11px;\">Press the RoundButton to capture a camera frame and send it to the bonded mobile app over BLE.</span>"}'
     - '// @ui {"widget":"separator"}'
     - '// @ui {"widget":"label", "label":"<span style=\"color: #60A5FA;\">Scene References</span>"}'
     - '// @input AssignableType cameraTexture {"hint":"CameraTexture component on your CropCameraTextureTS object (live glasses camera feed)"}'
-    - '// @input SceneObject liveFeedObject {"hint":"SceneObject that displays the live camera feed (e.g. CaptureCropped). Hidden at runtime."}'
+    - '// @input SceneObject liveFeedObject {"hint":"SceneObject that displays the live camera feed (e.g. CaptureCropped). Shown while aiming; hidden after capture until RoundButton is pressed again."}'
     - '// @input SceneObject reticleObject {"hint":"Head-locked reticle (child of Camera). Centered on capture region — e.g. ScanReticle"}'
     - '// @input Component.Image placeholderImage {"hint":"Placeholder Image used only when showCapturePreviewOnGlasses is enabled"}'
     - '// @input AssignableType_1 captureButton {"hint":"RoundButton that triggers capture on release (trigger up)"}'
@@ -82,11 +84,14 @@
     - '// @ui {"widget":"separator"}'
     - '// @ui {"widget":"label", "label":"<span style=\"color: #60A5FA;\">Scan View</span>"}'
     - '// @input bool showCapturePreviewOnGlasses {"hint":"Show the captured still on glasses after each scan. Off sends to phone only."}'
-    - '// @input float cropHalfSize = 0.22 {"hint":"Half-size of the square crop region in normalized coords. Smaller = more zoom (0.22 ≈ 44% of frame)."}'
-    - '// @input float cropHorizontalOffset = 0.08 {"hint":"Shift capture region horizontally to match reticle. Positive moves capture right (fixes subject appearing too far right)."}'
+    - '// @ui {"widget":"separator"}'
+    - '// @ui {"widget":"label", "label":"<span style=\"color: #60A5FA;\">Capture Region</span>"}'
+    - '// @input bool useFullFrameCapture = true {"hint":"Send the full camera frame. Off uses the crop region below for live feed and capture."}'
+    - '// @input float cropHalfSize = 0.22 {"hint":"Half-size of the square crop region in normalized coords. Smaller = more zoom (0.22 ≈ 44% of frame). Ignored when useFullFrameCapture is on."}'
+    - '// @input float cropHorizontalOffset = 0.08 {"hint":"Shift capture region horizontally to match reticle. Ignored when useFullFrameCapture is on."}'
     - '// @ui {"widget":"separator"}'
     - '// @ui {"widget":"label", "label":"<span style=\"color: #60A5FA;\">Capture Quality</span>"}'
-    - '// @input bool useHighResStillCapture = true {"hint":"Use CameraModule.requestImage for a 3200x2400 still, then crop. Much sharper than the live stream."}'
+    - '// @input bool useHighResStillCapture = true {"hint":"Use CameraModule.requestImage for a 3200x2400 still. Much sharper than the live stream."}'
     - '// @ui {"widget":"separator"}'
     - '// @ui {"widget":"label", "label":"<span style=\"color: #60A5FA;\">Barcode Encode</span>"}'
     - '// @input bool encodeGrayscale = true {"hint":"Convert to grayscale before JPEG encode. Smaller files, better for barcode scanning."}'

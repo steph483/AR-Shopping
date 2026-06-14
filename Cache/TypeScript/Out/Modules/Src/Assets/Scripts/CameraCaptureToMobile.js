@@ -73,6 +73,7 @@ let CameraCaptureToMobile = (() => {
             this.logText = this.logText;
             this.resultPanelText = this.resultPanelText;
             this.showCapturePreviewOnGlasses = this.showCapturePreviewOnGlasses;
+            this.useFullFrameCapture = this.useFullFrameCapture;
             this.cropHalfSize = this.cropHalfSize;
             this.cropHorizontalOffset = this.cropHorizontalOffset;
             this.useHighResStillCapture = this.useHighResStillCapture;
@@ -85,6 +86,7 @@ let CameraCaptureToMobile = (() => {
             this.placeholderPass = null;
             this.session = null;
             this.isSending = false;
+            this.isAiming = true;
             this.isEditor = global.deviceInfoSystem.isEditor();
             this.chunkSize = 2048;
         }
@@ -98,6 +100,7 @@ let CameraCaptureToMobile = (() => {
             this.logText = this.logText;
             this.resultPanelText = this.resultPanelText;
             this.showCapturePreviewOnGlasses = this.showCapturePreviewOnGlasses;
+            this.useFullFrameCapture = this.useFullFrameCapture;
             this.cropHalfSize = this.cropHalfSize;
             this.cropHorizontalOffset = this.cropHorizontalOffset;
             this.useHighResStillCapture = this.useHighResStillCapture;
@@ -110,6 +113,7 @@ let CameraCaptureToMobile = (() => {
             this.placeholderPass = null;
             this.session = null;
             this.isSending = false;
+            this.isAiming = true;
             this.isEditor = global.deviceInfoSystem.isEditor();
             this.chunkSize = 2048;
         }
@@ -158,17 +162,24 @@ let CameraCaptureToMobile = (() => {
             this.startMobileSession();
         }
         setupScanView() {
-            if (this.liveFeedObject) {
-                this.liveFeedObject.enabled = false;
-            }
-            if (this.reticleObject) {
-                this.reticleObject.enabled = true;
-            }
+            this.setAimingMode(true);
             if (!this.showCapturePreviewOnGlasses && this.placeholderImage) {
                 this.placeholderImage.getSceneObject().enabled = false;
             }
         }
+        setAimingMode(aiming) {
+            this.isAiming = aiming;
+            if (this.liveFeedObject) {
+                this.liveFeedObject.enabled = aiming;
+            }
+            if (this.reticleObject) {
+                this.reticleObject.enabled = aiming;
+            }
+        }
         getCropRect() {
+            if (this.useFullFrameCapture) {
+                return { left: -1, right: 1, bottom: -1, top: 1 };
+            }
             const half = this.cropHalfSize;
             const shiftX = this.cropHorizontalOffset;
             return {
@@ -215,6 +226,9 @@ let CameraCaptureToMobile = (() => {
             const fullTexture = imageFrame.texture;
             ValidationUtils_1.ValidationUtils.assertNotNull(fullTexture, "High-res still returned no texture");
             this.appendLine(`Full still: ${fullTexture.getWidth()}x${fullTexture.getHeight()}`);
+            if (this.useFullFrameCapture) {
+                return fullTexture;
+            }
             return this.applyCropToTexture(fullTexture);
         }
         prepareBarcodeTexture(source) {
@@ -279,13 +293,19 @@ let CameraCaptureToMobile = (() => {
                 this.appendLine("Transfer in progress");
                 return;
             }
+            if (!this.isAiming) {
+                FoodDataStore_1.FoodDataStore.reset();
+                this.setResultPanelText("");
+                this.setAimingMode(true);
+                this.appendLine("Live feed restored — aim at barcode and press again to capture");
+                return;
+            }
             if (!this.session || !this.session.isConnected) {
                 this.appendLine("Not connected to mobile app");
                 return;
             }
+            this.setAimingMode(false);
             this.isSending = true;
-            FoodDataStore_1.FoodDataStore.reset();
-            this.setResultPanelText("");
             this.appendLine("Capturing…");
             this.captureAndSend();
         }
@@ -296,7 +316,9 @@ let CameraCaptureToMobile = (() => {
                     sourceTexture = await this.captureHighResStill();
                 }
                 else {
-                    sourceTexture = this.cameraTexture.getCameraTexture();
+                    sourceTexture = this.useFullFrameCapture
+                        ? this.cameraTexture.getOriginalCameraTexture()
+                        : this.cameraTexture.getCameraTexture();
                     ValidationUtils_1.ValidationUtils.assertNotNull(sourceTexture, "Camera texture is not ready yet");
                 }
                 const stillTexture = this.prepareBarcodeTexture(sourceTexture);
@@ -304,12 +326,13 @@ let CameraCaptureToMobile = (() => {
                 if (this.showCapturePreviewOnGlasses && this.placeholderPass) {
                     this.placeholderPass.baseTex = stillTexture;
                 }
-                this.appendLine(`Captured ${stillTexture.getWidth()}x${stillTexture.getHeight()}${this.encodeGrayscale ? " grayscale" : ""} still frame`);
+                this.appendLine(`Captured ${stillTexture.getWidth()}x${stillTexture.getHeight()}${this.useFullFrameCapture ? " full frame" : " cropped"}${this.encodeGrayscale ? " grayscale" : ""} still frame`);
                 this.encodeAndSend(stillTexture);
             }
             catch (error) {
                 this.appendLine("Capture failed: " + error);
                 this.isSending = false;
+                this.setAimingMode(true);
             }
         }
         encodeAndSend(texture) {
@@ -325,6 +348,7 @@ let CameraCaptureToMobile = (() => {
             }, () => {
                 self.appendLine("Image encode failed");
                 self.isSending = false;
+                self.setAimingMode(true);
             }, quality, EncodingType.Jpg);
         }
         sendBase64(session, base64) {
@@ -351,6 +375,7 @@ let CameraCaptureToMobile = (() => {
                 .catch((error) => {
                 self.appendLine("img_start failed: " + error);
                 self.isSending = false;
+                self.setAimingMode(true);
             });
         }
         sendNextChunk(session, chunks, transferId, index) {
@@ -376,6 +401,7 @@ let CameraCaptureToMobile = (() => {
                 .catch((error) => {
                 self.appendLine("Chunk failed: " + error);
                 self.isSending = false;
+                self.setAimingMode(true);
             });
         }
         requestFoodLookup(session) {

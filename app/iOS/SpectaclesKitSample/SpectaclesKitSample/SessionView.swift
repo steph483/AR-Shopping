@@ -95,6 +95,17 @@ struct SessionView: View {
                 debugRow(label: "Status", value: model.debugScanStatus)
                 debugRow(label: "Barcode", value: model.debugDetectedBarcode.isEmpty ? "—" : model.debugDetectedBarcode)
 
+                Text("Barcode scan detail:")
+                    .font(.subheadline)
+                    .padding(.top, 4)
+                TextEditor(text: .constant(model.debugBarcodeScanDetail.isEmpty ? "—" : model.debugBarcodeScanDetail))
+                    .frame(minHeight: 80)
+                    .padding(8)
+                    .background(Color(.systemGray6))
+                    .cornerRadius(10)
+                    .disabled(true)
+                    .padding(.bottom, 8)
+
                 Text("API summary:")
                     .font(.subheadline)
                     .padding(.top, 8)

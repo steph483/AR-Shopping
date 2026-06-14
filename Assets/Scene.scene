@@ -20104,8 +20104,8 @@
   ScriptAsset: !<reference> ea7ab870-e29c-451e-8a1f-23ce73f8a24a
   ScriptInputsDefault:
     showCapturePreviewOnGlasses: true
-    useHighResStillCapture: true
-    encodeGrayscale: true
+    useFullFrameCapture: true
+    maximumJpegQuality: true
     enableLogging: true
     enableLoggingLifecycle: true
   ScriptTypesDefault:
@@ -20120,11 +20120,12 @@
       logText: !<reference.Text> 943d29bc-32c7-41f3-8f12-ad4ec0c5111e
       resultPanelText: !<reference.Text> 5bc9c5c4-854b-4de2-949f-63976bd621d0
       showCapturePreviewOnGlasses: false
+      useFullFrameCapture: true
       cropHalfSize: 0.220000
       cropHorizontalOffset: 0.280000
-      useHighResStillCapture: true
-      encodeGrayscale: true
-      maximumJpegQuality: true
+      useHighResStillCapture: false
+      encodeGrayscale: false
+      maximumJpegQuality: false
       enableLogging: false
       enableLoggingLifecycle: false
   ScriptTypes:
