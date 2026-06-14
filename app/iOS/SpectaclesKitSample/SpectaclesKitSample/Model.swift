@@ -390,15 +390,22 @@ final class Model: ObservableObject {
         lines.append("product_name: \(product.product_name ?? "—")")
         lines.append("brands: \(product.brands ?? "—")")
         if let nutriments = product.nutriments {
-            lines.append("energy_kcal_100g: \(nutriments.energy_kcal_100g.map(String.init) ?? "—")")
-            lines.append("proteins_100g: \(nutriments.proteins_100g.map(String.init) ?? "—")")
-            lines.append("carbohydrates_100g: \(nutriments.carbohydrates_100g.map(String.init) ?? "—")")
-            lines.append("fat_100g: \(nutriments.fat_100g.map(String.init) ?? "—")")
+            lines.append("energy_kcal_100g: \(formatOptionalDouble(nutriments.energy_kcal_100g))")
+            lines.append("proteins_100g: \(formatOptionalDouble(nutriments.proteins_100g))")
+            lines.append("carbohydrates_100g: \(formatOptionalDouble(nutriments.carbohydrates_100g))")
+            lines.append("fat_100g: \(formatOptionalDouble(nutriments.fat_100g))")
         }
         lines.append("")
         lines.append("Raw response (truncated):")
         lines.append(String(rawSummary.prefix(1200)))
         return lines.joined(separator: "\n")
+    }
+
+    private func formatOptionalDouble(_ value: Double?) -> String {
+        guard let value else {
+            return "—"
+        }
+        return String(value)
     }
     
     
