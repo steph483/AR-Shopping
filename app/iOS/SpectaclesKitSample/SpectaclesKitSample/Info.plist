@@ -21,5 +21,7 @@
 	</array>
 	<key>NSBluetoothAlwaysUsageDescription</key>
 	<string>The app uses bluetooth to find, connect and transfer data between different devices</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Used to pick a test photo when debugging barcode scanning from glasses images.</string>
 </dict>
 </plist>

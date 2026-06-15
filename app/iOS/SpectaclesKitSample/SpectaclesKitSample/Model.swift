@@ -31,6 +31,9 @@ final class Model: ObservableObject {
     @Published var debugApiSummary: String = ""
     @Published var debugSentToGlasses: String = ""
 
+    /// Shown when a glasses image fails barcode scan; user can upload a phone photo before lookup returns.
+    @Published var showDebugImageReplacement: Bool = false
+
     /// Called on the main actor whenever a complete image arrives from Spectacles.
     /// `receivedImage` is updated before this runs. Use this hook for barcode scanning or other processing.
     var onImageReceived: (@MainActor (UIImage) -> Void)?
@@ -40,6 +43,12 @@ final class Model: ObservableObject {
     private var connectionObserverTask: Task<Void, Never>?
     @MainActor private var lookupInProgress = false
     @MainActor private var cachedLookupJSON: String?
+    @MainActor private var awaitingDebugReplacement = false
+
+    private enum FoodImageSource {
+        case glasses
+        case debugReplacement
+    }
 
     init() {
         bondingManager = BuilderFactory.create().setIdentifier(ClientIdentifier(clientId: Bundle.main.bundleIdentifier!, appName: "SampleApp")!).setVersion("1.0").setAuth(testAuthentication()).build()
@@ -49,6 +58,7 @@ final class Model: ObservableObject {
                 guard let self else { return }
                 self.receivedImage = nil
                 self.resetLookupCache()
+                self.clearDebugReplacementState()
                 self.debugScanStatus = "Receiving image…"
             }
         }
@@ -65,8 +75,8 @@ final class Model: ObservableObject {
             self.onImageReceived?(image)
             
             Task {
-                    await self.processFoodImage(image)
-                }
+                await self.processFoodImage(image, source: .glasses)
+            }
         }
 
         getAllBonding()
@@ -160,6 +170,7 @@ final class Model: ObservableObject {
         connectionStatusText = ""
         Task { @MainActor in
             self.resetLookupCache()
+            self.clearDebugReplacementState()
             self.debugScanStatus = "Idle"
             self.debugDetectedBarcode = ""
             self.debugBarcodeScanDetail = ""
@@ -172,6 +183,30 @@ final class Model: ObservableObject {
     private func resetLookupCache() {
         lookupInProgress = false
         cachedLookupJSON = nil
+        awaitingDebugReplacement = false
+    }
+
+    @MainActor
+    private func clearDebugReplacementState() {
+        showDebugImageReplacement = false
+        awaitingDebugReplacement = false
+    }
+
+    /// Runs the same barcode + Open Food Facts pipeline on a user-selected phone photo.
+    func submitDebugReplacementImage(_ image: UIImage) {
+        receivedImage = image
+        Task {
+            await processFoodImage(image, source: .debugReplacement)
+        }
+    }
+
+    /// Sends the cached error to glasses when the user declines a debug retry.
+    @MainActor
+    func skipDebugReplacement() {
+        showDebugImageReplacement = false
+        awaitingDebugReplacement = false
+        cacheLookupError("No barcode found")
+        receivedMessage = "Food processing failed: No barcode found"
     }
 
     @MainActor
@@ -207,12 +242,16 @@ final class Model: ObservableObject {
     }
 
     private func getFoodLookupResponse() async -> String {
-        let timeoutSeconds = 30.0
         let start = Date()
 
         while await MainActor.run(body: { self.lookupInProgress }) {
+            let timeoutSeconds = await MainActor.run {
+                self.awaitingDebugReplacement ? 120.0 : 30.0
+            }
             if Date().timeIntervalSince(start) > timeoutSeconds {
                 return await MainActor.run {
+                    self.showDebugImageReplacement = false
+                    self.awaitingDebugReplacement = false
                     self.cacheLookupError("Lookup timed out")
                     return self.cachedLookupJSON ?? encodeLookupResponse(FoodLookupResponse.error("Lookup timed out"))!
                 }
@@ -374,7 +413,7 @@ final class Model: ObservableObject {
     ) -> String {
         "ui=\(uiOrientation.rawValue), vision=\(orientation.rawValue)"
     }
-    
+
     func fetchProduct(
         barcode: String
     ) async throws -> (product: Product, rawSummary: String) {
@@ -411,13 +450,20 @@ final class Model: ObservableObject {
     }
 
     func processFoodImage(
-        _ image: UIImage
+        _ image: UIImage,
+        source: FoodImageSource = .glasses
     ) async {
 
         await MainActor.run {
             self.lookupInProgress = true
             self.cachedLookupJSON = nil
-            self.debugScanStatus = "Scanning barcode…"
+            if source == .debugReplacement {
+                self.showDebugImageReplacement = false
+                self.awaitingDebugReplacement = false
+            }
+            self.debugScanStatus = source == .debugReplacement
+                ? "Scanning barcode (debug photo)…"
+                : "Scanning barcode…"
             self.debugDetectedBarcode = ""
             self.debugBarcodeScanDetail = ""
             self.debugApiSummary = ""
@@ -466,6 +512,18 @@ final class Model: ObservableObject {
             print(error)
 
             await MainActor.run {
+                if source == .glasses, self.isBarcodeNotFoundError(error) {
+                    if let detail = (error as NSError).userInfo["BarcodeScanDetail"] as? String {
+                        self.debugBarcodeScanDetail = detail
+                    }
+                    self.awaitingDebugReplacement = true
+                    self.showDebugImageReplacement = true
+                    self.debugScanStatus = "Barcode not found — upload a phone photo"
+                    self.receivedMessage =
+                        "Glasses image could not read a barcode. Upload a test photo below (glasses are waiting for lookup)."
+                    return
+                }
+
                 self.cacheLookupError(error.localizedDescription)
                 if self.debugBarcodeScanDetail.isEmpty,
                    let detail = (error as NSError).userInfo["BarcodeScanDetail"] as? String
@@ -478,6 +536,11 @@ final class Model: ObservableObject {
                     "Food processing failed: \(error.localizedDescription)"
             }
         }
+    }
+
+    private func isBarcodeNotFoundError(_ error: Error) -> Bool {
+        let nsError = error as NSError
+        return nsError.domain == "BarcodeDetection" && nsError.code == 2
     }
 
     @MainActor

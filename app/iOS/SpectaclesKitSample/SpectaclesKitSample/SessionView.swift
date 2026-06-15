@@ -1,11 +1,14 @@
 // Copyright © 2024 Snap, Inc. All rights reserved.
+import PhotosUI
 import SwiftUI
+import UIKit
 
 struct SessionView: View {
     @EnvironmentObject private var model: Model
     var bonding: BondingData
 
     @State private var sendMessage: String = "Hello from mobile"
+    @State private var selectedPhotoItem: PhotosPickerItem?
 
     var body: some View {
         ScrollView(showsIndicators: false) {
@@ -92,6 +95,10 @@ struct SessionView: View {
                     .font(.headline)
                     .padding(.top, 8)
 
+                if model.showDebugImageReplacement {
+                    debugReplacementSection
+                }
+
                 debugRow(label: "Status", value: model.debugScanStatus)
                 debugRow(label: "Barcode", value: model.debugDetectedBarcode.isEmpty ? "—" : model.debugDetectedBarcode)
 
@@ -136,6 +143,57 @@ struct SessionView: View {
 
     private func hideKeyboard() {
         UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+    }
+
+    private var debugReplacementSection: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text("Debug: retry with phone photo")
+                .font(.subheadline)
+                .fontWeight(.semibold)
+
+            Text(
+                "The glasses image could not read a barcode. Pick a photo from your library to run the same scan + Open Food Facts pipeline. The glasses are still waiting for the food lookup response."
+            )
+            .font(.footnote)
+            .foregroundStyle(.secondary)
+
+            PhotosPicker(
+                selection: $selectedPhotoItem,
+                matching: .images,
+                photoLibrary: .shared()
+            ) {
+                Label("Upload test photo", systemImage: "photo.on.rectangle.angled")
+                    .frame(maxWidth: .infinity)
+                    .padding()
+                    .foregroundColor(.white)
+                    .background(Color.orange)
+                    .cornerRadius(8)
+            }
+            .onChange(of: selectedPhotoItem) { _, newItem in
+                guard let newItem else { return }
+                Task {
+                    if let data = try? await newItem.loadTransferable(type: Data.self),
+                       let image = UIImage(data: data)
+                    {
+                        await MainActor.run {
+                            model.submitDebugReplacementImage(image)
+                        }
+                    }
+                    await MainActor.run {
+                        selectedPhotoItem = nil
+                    }
+                }
+            }
+
+            Button("Skip — send error to glasses") {
+                model.skipDebugReplacement()
+            }
+            .buttonStyle(.bordered)
+        }
+        .padding(12)
+        .background(Color.orange.opacity(0.12))
+        .cornerRadius(10)
+        .padding(.bottom, 12)
     }
 
     private func debugRow(label: String, value: String) -> some View {
