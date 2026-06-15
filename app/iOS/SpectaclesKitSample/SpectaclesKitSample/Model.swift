@@ -449,7 +449,7 @@ final class Model: ObservableObject {
         return (product, rawSummary)
     }
 
-    func processFoodImage(
+    private func processFoodImage(
         _ image: UIImage,
         source: FoodImageSource = .glasses
     ) async {
