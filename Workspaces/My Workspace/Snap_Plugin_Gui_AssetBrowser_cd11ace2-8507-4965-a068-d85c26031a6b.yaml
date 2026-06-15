@@ -1,8 +1,9 @@
 CollapsedEntities:
   type: stringset
   value:
-    size: 803
+    size: 859
     values:
+      - ""
       - CropCameraTexture.lspkg
       - CropCameraTexture.lspkg/CropCameraTextureTS__PLACE_IN_SCENE.prefab
       - CropCameraTexture.lspkg/Materials
@@ -19,19 +20,44 @@ CollapsedEntities:
       - CropCameraTexture.lspkg/Shaders/SpritePreset.ss_graph
       - CropCameraTexture.lspkg/package.native
       - CropCameraTexture.lspkg/package_dependencies.json
-      - Image 2.mat
-      - Image.mat
       - Images
-      - Images/Test Capture Images
+      - Images/Image 2.png
+      - Images/Image.png
+      - Images/ProgressBarBase.png
+      - Images/ProgressBarFill.png
+      - Images/Rectangle 2.png
+      - Images/Rectangle 24666.png
+      - Images/Rectangle 24667.png
+      - Images/Rectangle 3.png
       - Materials
+      - Materials/Image 2.mat
+      - Materials/Image 3.mat
+      - Materials/Image 4.mat
+      - Materials/Image 5.mat
+      - Materials/Image 6.mat
+      - Materials/Image 7.mat
+      - Materials/Image 8.mat
+      - Materials/Image 9.mat
+      - Materials/Image.mat
+      - Materials/Uber PBR.mat
+      - Materials/progressfill.mat
       - Prefabs
+      - Prefabs/Guide_ReadAndDisable.prefab
+      - ProgressBarBase.png
+      - ProgressBarFill.png
       - Render
+      - Render/Overlay Target.renderTarget
+      - Render/Render Target.renderTarget
       - Scene.scene
-      - Scripts
-      - Scripts/CameraCaptureToMobile.ts
-      - Scripts/CameraCaptureToPlaceholder.ts
       - Scripts/FoodDataStore.ts
+      - Scripts/FrameSetup.ts
+      - Scripts/IngredientsCard.ts
+      - Scripts/NutritionCardController.ts
+      - Scripts/SpectaclesMobileKitTest_JS.js
+      - Scripts/SpectaclesMobileKitTest_TS.ts
       - Shaders
+      - Shaders/flat.ss_graph
+      - Shaders/uber_pbr.ss_graph
       - SnapDecorators 3.lspkg
       - SnapDecorators 3.lspkg/Examples.ts
       - SnapDecorators 3.lspkg/Examples__PLACE_IN_SCENE.prefab
@@ -42,7 +68,15 @@ CollapsedEntities:
       - SnapDecorators 3.lspkg/guards.ts
       - SnapDecorators 3.lspkg/package.native
       - SnapDecorators.lspkg
+      - SnapDecorators.lspkg/Examples.ts
+      - SnapDecorators.lspkg/Examples__PLACE_IN_SCENE.prefab
+      - SnapDecorators.lspkg/README.md
+      - SnapDecorators.lspkg/assert.ts
+      - SnapDecorators.lspkg/debug.ts
+      - SnapDecorators.lspkg/decorators.ts
+      - SnapDecorators.lspkg/guards.ts
       - SnapDecorators.lspkg/package.native
+      - SnapDecorators.lspkg/package_dependencies.json
       - SpectaclesInteractionKit.lspkg
       - SpectaclesInteractionKit.lspkg/Assets
       - SpectaclesInteractionKit.lspkg/Assets/Audio
@@ -258,6 +292,7 @@ CollapsedEntities:
       - SpectaclesInteractionKit.lspkg/Components/Interaction/InteractorLineVisual/InteractorLineVisual.ts
       - SpectaclesInteractionKit.lspkg/Components/Interaction/InteractorRayVisual
       - SpectaclesInteractionKit.lspkg/Components/Interaction/InteractorRayVisual/InteractorRayVisual.ts
+      - SpectaclesInteractionKit.lspkg/Components/UI
       - SpectaclesInteractionKit.lspkg/Components/UI/ContainerFrame
       - SpectaclesInteractionKit.lspkg/Components/UI/ContainerFrame/ContainerFrame.ts
       - SpectaclesInteractionKit.lspkg/Components/UI/ContainerFrame/Materials
@@ -371,6 +406,7 @@ CollapsedEntities:
       - SpectaclesInteractionKit.lspkg/Core/SyncInteractor/SyncInteractor.ts
       - SpectaclesInteractionKit.lspkg/Decorators
       - SpectaclesInteractionKit.lspkg/Decorators/Singleton.ts
+      - SpectaclesInteractionKit.lspkg/Prefabs
       - SpectaclesInteractionKit.lspkg/Prefabs/ScrollViewListItem.prefab
       - SpectaclesInteractionKit.lspkg/Prefabs/SpectaclesInteractionKit.prefab
       - SpectaclesInteractionKit.lspkg/Providers
@@ -421,6 +457,7 @@ CollapsedEntities:
       - SpectaclesInteractionKit.lspkg/Providers/TargetProvider/TargetingData.ts
       - SpectaclesInteractionKit.lspkg/README.md
       - SpectaclesInteractionKit.lspkg/SIK.ts
+      - SpectaclesInteractionKit.lspkg/Utils
       - SpectaclesInteractionKit.lspkg/Utils/BinaryHeap.ts
       - SpectaclesInteractionKit.lspkg/Utils/BistableThreshold.ts
       - SpectaclesInteractionKit.lspkg/Utils/ColliderUtils.ts
@@ -652,6 +689,7 @@ CollapsedEntities:
       - SpectaclesInteractionKitExamples.lspkg/UIStarter/Textures/image_unlit.ss_graph
       - SpectaclesInteractionKitExamples.lspkg/package.native
       - SpectaclesInteractionKitExamples.lspkg/package_dependencies.json
+      - SpectaclesUIKit.lspkg
       - SpectaclesUIKit.lspkg/Audio
       - SpectaclesUIKit.lspkg/Audio/HoverAudioTrack.wav
       - SpectaclesUIKit.lspkg/Audio/SliderProgressionAudioTrack.wav
@@ -681,6 +719,7 @@ CollapsedEntities:
       - SpectaclesUIKit.lspkg/Meshes/DefaultSphere.mesh
       - SpectaclesUIKit.lspkg/Meshes/StretchableCircle.mesh
       - SpectaclesUIKit.lspkg/Meshes/Unit Plane.mesh
+      - SpectaclesUIKit.lspkg/Prefabs
       - SpectaclesUIKit.lspkg/Prefabs/DropShadow.prefab
       - SpectaclesUIKit.lspkg/Prefabs/ExampleInterface.prefab
       - SpectaclesUIKit.lspkg/Prefabs/FrameButton.prefab
@@ -688,7 +727,9 @@ CollapsedEntities:
       - SpectaclesUIKit.lspkg/Prefabs/LabelledButton.prefab
       - SpectaclesUIKit.lspkg/Prefabs/LabelledToggle.prefab
       - SpectaclesUIKit.lspkg/README.md
+      - SpectaclesUIKit.lspkg/Scripts
       - SpectaclesUIKit.lspkg/Scripts/BackPlate.ts
+      - SpectaclesUIKit.lspkg/Scripts/Components
       - SpectaclesUIKit.lspkg/Scripts/Components/Button
       - SpectaclesUIKit.lspkg/Scripts/Components/Button/BaseButton.ts
       - SpectaclesUIKit.lspkg/Scripts/Components/Button/CapsuleButton.ts
@@ -697,6 +738,7 @@ CollapsedEntities:
       - SpectaclesUIKit.lspkg/Scripts/Components/Button/RectangleButton.ts
       - SpectaclesUIKit.lspkg/Scripts/Components/Button/RoundButton.ts
       - SpectaclesUIKit.lspkg/Scripts/Components/Element.ts
+      - SpectaclesUIKit.lspkg/Scripts/Components/Frame
       - SpectaclesUIKit.lspkg/Scripts/Components/Frame/Frame.ts
       - SpectaclesUIKit.lspkg/Scripts/Components/Frame/modules
       - SpectaclesUIKit.lspkg/Scripts/Components/Frame/modules/ButtonHandler.ts
@@ -803,7 +845,21 @@ CollapsedEntities:
       - Utilities 3.lspkg/Scripts/Utils/TypeConversionUtils.ts
       - Utilities 3.lspkg/Scripts/Utils/ValidationUtils.ts
       - Utilities 3.lspkg/package.native
+      - Utilities.lspkg
+      - Utilities.lspkg/README.md
+      - Utilities.lspkg/Scripts
       - Utilities.lspkg/Scripts/Utils
+      - Utilities.lspkg/Scripts/Utils/AnimationUtils.ts
+      - Utilities.lspkg/Scripts/Utils/ComponentUtils.ts
+      - Utilities.lspkg/Scripts/Utils/Logger.ts
+      - Utilities.lspkg/Scripts/Utils/MathUtils.ts
+      - Utilities.lspkg/Scripts/Utils/MeshUtils.ts
+      - Utilities.lspkg/Scripts/Utils/SceneObjectUtils.ts
+      - Utilities.lspkg/Scripts/Utils/ScreenTransformUtils.ts
+      - Utilities.lspkg/Scripts/Utils/TypeConversionUtils.ts
+      - Utilities.lspkg/Scripts/Utils/ValidationUtils.ts
       - Utilities.lspkg/package.native
+      - Utilities.lspkg/package_dependencies.json
+      - flat 2.ss_graph
       - flat.ss_graph
   options: 4

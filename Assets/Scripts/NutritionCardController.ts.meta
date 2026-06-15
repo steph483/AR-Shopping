@@ -1,0 +1,80 @@
+- !<AssetImportMetadata/3fa81cd0-9c68-465f-a39d-572f17fa1eaf>
+  ImportedAssetIds:
+    TypeScriptAsset: !<reference> ce19bbfd-0ddb-4763-b64f-e0a396976025
+  ImporterName: TypeScriptAssetImporter
+  PrimaryAsset: !<reference> ce19bbfd-0ddb-4763-b64f-e0a396976025
+  PackageType: NotAPackage
+  LegacyPackagePolicy: ~
+  ExtraData:
+    {}
+  AssetDataMap:
+    TypeScriptAsset: !<own> 1ac0a6ad-e3c3-4eef-b86f-2bb9ce44b137
+  DependentFiles:
+    []
+  ImporterSettings: !<AssetImporterSettings>
+    {}
+  CompressionSettings: !<own> 00000000-0000-0000-0000-000000000000
+- !<TypeScriptAssetData/1ac0a6ad-e3c3-4eef-b86f-2bb9ce44b137>
+  SvgIcon: ""
+  SetupScript:
+    code: ""
+  Description: ""
+  VersionMajor: 0
+  VersionMinor: 0
+  VersionPatch: 0
+  ComponentUid: 3cabd869-682a-410d-b6dc-efefb4596544
+  ExportUid: 00000000-0000-0000-0000-000000000000
+  PackagePolicy: CanBeUnpacked
+  ScriptInputsHidden:
+    barcodeText: false
+    brandText: false
+    caloriesBar: false
+    caloriesText: false
+    carbsBar: false
+    carbsText: false
+    cardRoot: false
+    fatBar: false
+    fatText: false
+    productNameText: false
+    proteinBar: false
+    proteinText: false
+    statusText: false
+  ScriptTypesHidden:
+    {}
+  ReadMe: !<reference> 00000000-0000-0000-0000-000000000000
+  DeclarationFile: !<reference> 00000000-0000-0000-0000-000000000000
+  Tags:
+    []
+  Attachments:
+    []
+  DefaultScriptInputs:
+    - cardRoot: !<reference.SceneObject> 00000000-0000-0000-0000-000000000000
+      statusText: !<reference.Text> 00000000-0000-0000-0000-000000000000
+      productNameText: !<reference.Text> 00000000-0000-0000-0000-000000000000
+      brandText: !<reference.Text> 00000000-0000-0000-0000-000000000000
+      caloriesText: !<reference.Text> 00000000-0000-0000-0000-000000000000
+      proteinText: !<reference.Text> 00000000-0000-0000-0000-000000000000
+      carbsText: !<reference.Text> 00000000-0000-0000-0000-000000000000
+      fatText: !<reference.Text> 00000000-0000-0000-0000-000000000000
+      barcodeText: !<reference.Text> 00000000-0000-0000-0000-000000000000
+      caloriesBar: !<reference.SceneObject> 00000000-0000-0000-0000-000000000000
+      proteinBar: !<reference.SceneObject> 00000000-0000-0000-0000-000000000000
+      carbsBar: !<reference.SceneObject> 00000000-0000-0000-0000-000000000000
+      fatBar: !<reference.SceneObject> 00000000-0000-0000-0000-000000000000
+  ScriptTypes:
+    -
+      {}
+  InputLines:
+    - '// @input SceneObject cardRoot {"hint":"Parent object for the whole nutrition card"}'
+    - // @input Component.Text statusText
+    - // @input Component.Text productNameText
+    - // @input Component.Text brandText
+    - // @input Component.Text caloriesText
+    - // @input Component.Text proteinText
+    - // @input Component.Text carbsText
+    - // @input Component.Text fatText
+    - // @input Component.Text barcodeText
+    - // @input SceneObject caloriesBar
+    - // @input SceneObject proteinBar
+    - // @input SceneObject carbsBar
+    - // @input SceneObject fatBar

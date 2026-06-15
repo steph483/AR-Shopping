@@ -1,0 +1,44 @@
+- !<AssetImportMetadata/8b50b184-674b-4de8-a024-9bf6aa6c6254>
+  ImportedAssetIds:
+    TypeScriptAsset: !<reference> 8143dfd8-aa13-4616-83a3-fdf7b0fa4867
+  ImporterName: TypeScriptAssetImporter
+  PrimaryAsset: !<reference> 8143dfd8-aa13-4616-83a3-fdf7b0fa4867
+  PackageType: NotAPackage
+  LegacyPackagePolicy: ~
+  ExtraData:
+    {}
+  AssetDataMap:
+    TypeScriptAsset: !<own> f6d44899-201c-4601-973d-fdc04a15f26d
+  DependentFiles:
+    []
+  ImporterSettings: !<AssetImporterSettings>
+    {}
+  CompressionSettings: !<own> 00000000-0000-0000-0000-000000000000
+- !<TypeScriptAssetData/f6d44899-201c-4601-973d-fdc04a15f26d>
+  SvgIcon: ""
+  SetupScript:
+    code: ""
+  Description: ""
+  VersionMajor: 0
+  VersionMinor: 0
+  VersionPatch: 0
+  ComponentUid: 0d9d2c79-ba61-434c-9ba0-9ed58de165a1
+  ExportUid: 00000000-0000-0000-0000-000000000000
+  PackagePolicy: CanBeUnpacked
+  ScriptInputsHidden:
+    titleText: false
+  ScriptTypesHidden:
+    {}
+  ReadMe: !<reference> 00000000-0000-0000-0000-000000000000
+  DeclarationFile: !<reference> 00000000-0000-0000-0000-000000000000
+  Tags:
+    []
+  Attachments:
+    []
+  DefaultScriptInputs:
+    - titleText: !<reference.Text> 00000000-0000-0000-0000-000000000000
+  ScriptTypes:
+    -
+      {}
+  InputLines:
+    - // @input Component.Text titleText

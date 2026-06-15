@@ -40,7 +40,7 @@ mirrorHorizontally:
   options: 4
 previewSource:
   type: string
-  value: InteractiveResources.bundle/Scenes/Sunlit Room
+  value: USB2.0 FHD UVC WebCam
   options: 4
 previewTarget:
   type: int
@@ -48,7 +48,7 @@ previewTarget:
   options: 4
 previewType:
   type: string
-  value: Interactive
+  value: Webcam
   options: 4
 recordInput:
   type: bool
